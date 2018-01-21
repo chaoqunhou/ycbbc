@@ -1,0 +1,422 @@
+{extend name="adminblue/base" /}
+{block name="resources"/}{/block}
+{block name="main"}
+<!--标签切换-->
+<div style="padding: 10px">
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab"
+                                                  data-toggle="tab">我的订单</a></li>
+        <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">快速订货</a></li>
+        <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">配件订货</a>
+        </li>
+        <li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">订单签收</a>
+        </li>
+    </ul>
+    <!-- Tab panes -->
+    <div>
+        <style>
+            .x-label {
+                color: #777;
+                font-size: 12px;
+            }
+
+            .x-box {
+                border: 1px solid #e5e5e5
+            }
+
+            .x-box-item {
+            }
+
+            .x-box-item-title {
+                background-color: #f5f5f5;
+                padding: 10px 50px;
+                display: inline-block;
+            }
+
+            .x-box-item-label {
+                color: #777;
+                padding: 0 0 0 10px;
+                cursor: pointer;
+            }
+
+            .x-box-item-label-active {
+                color:#a94442
+            }
+
+            .x-box-bottom-border {
+                border-bottom: 1px solid #e5e5e5;
+            }
+
+            /*视图切换*/
+            .x-view-change {
+                background-color: #f5f5f5;
+                margin: 20px 0;
+                padding: 10px;
+            }
+
+            .x-clear:after {
+                content: "020";
+                display: block;
+                height: 0;
+                clear: both;
+                visibility: hidden;
+            }
+
+            .x-right {
+                float: right;
+            }
+
+            /*商品列表*/
+            .x-goods-column {
+                border: 2px solid #e5e5e5;
+                width: 18%;
+                padding: 10px;
+                float: left;
+                box-sizing: border-box;
+                margin: 10px 1%;
+                position: relative;
+            }
+
+            .x-goods-column:hover {
+                border-color: rgb(252, 13, 27);
+                border-width: 2px;
+                border-bottom-color: #fff;
+            }
+
+            .x-goods-column:hover .x-goods-column-activity {
+                display: block;
+            }
+
+            .x-goods-column-img {
+                width: 100%;
+                height: 300px;
+                margin-bottom: 10px;
+            }
+
+            .x-goods-column-img img {
+                width: 100%;
+                height: 100%;
+            }
+
+            .x-goods-column-title {
+                font-size: 15px;
+                color: #323232
+            }
+
+            .x-goods-column-subtitle {
+                color: #646464;
+                font-size: 13px;
+                line-height: 20px;
+            }
+
+            .x-goods-column-price {
+                font-size: 20px;
+                color: rgb(252, 13, 27);
+                font-weight: 600;
+            }
+
+            .x-goods-column-old-price {
+                font-size: 12px;
+                color: #999;
+                text-decoration: line-through;
+            }
+
+            .x-goods-column-activity {
+                background-color: #fff;
+                width: 100%;
+                position: absolute;
+                top: 0;
+                left: -2px;
+                z-index: 999;
+                border-color: rgb(252, 13, 27);
+                border-style: solid;
+                border-width: 0 2px 2px 2px;
+                display: none;
+            }
+
+            .x-goods-column-activity-child {
+                padding: 0 10px;
+            }
+
+            .x-goods-column-activity-item {
+                margin-bottom: 5px;
+            }
+
+            .x-form-left {
+                /*background-color: #0ab9b9;*/
+                float: left;
+                width: 15%;
+                line-height: 30px;
+            }
+
+            .x-form-right {
+                /*background-color: #0BB20C;*/
+                float: left;
+                width: 85%;
+                /*text-align: center;*/
+            }
+
+            .x-form-right * {
+                width: 100%;
+                padding: 0;
+                margin: 0;
+            }
+
+            /*品牌标签*/
+            .pinpai {
+                display: inline-block;
+                padding: 2px;
+                border: 1px solid #777;
+                color: #777;
+                margin-right: 8px;
+            }
+
+        </style>
+        <script>
+            $(function () {
+                var img_width = $('.x-goods-column-img').width();
+                $('.x-goods-column-img').css({
+                    height: img_width * 10 / 9 + 'px'
+                });
+                var height = $('.x-goods-column').height();
+                $('.x-goods-column-activity').css({
+                    top: 20 + height + "px"
+                })
+            })
+        </script>
+
+        <!--品牌选择-->
+        <div style="margin-bottom: 15px">
+            <span class="x-label">全部></span>
+            <div style="display: inline;padding: 0 10px;">
+                <span class="pinpai">品牌：华为<span style="padding: 0 2px 0 10px;cursor: pointer">x</span></span>
+                <span class="pinpai">品牌：华为<span style="padding: 0 2px 0 10px;cursor: pointer">x</span></span>
+            </div>
+            <!--搜索-->
+            <div class="input-prepend input-append" style="float: right">
+                <div class="btn-group">
+                    <button class="btn dropdown-toggle" data-toggle="dropdown">
+                        按商品
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">按商品</a></li>
+                        <li><a href="#">按分类</a></li>
+                    </ul>
+                </div>
+                <input class="span3" type="text" placeholder="搜索...">
+                <button class="btn btn-info">
+                    <i class="icon-search icon-white"></i>
+                    搜索
+                </button>
+            </div>
+        </div>
+        <div class="x-box">
+            <div class="x-box-bottom-border">
+                <span class="x-box-item-title">类型</span>
+                <span class="x-box-item-label">筛选1</span>
+                <span class="x-box-item-label">筛选1</span>
+            </div>
+            <div>
+                <span class="x-box-item-title">标签</span>
+                <span class="x-box-item-label">标签详情</span>
+                <span class="x-box-item-label x-box-item-label-active">著名品牌</span>
+            </div>
+        </div>
+        <!--视图切换-->
+        <div class="x-view-change x-clear">
+            <div class="x-right">
+                <span>共21件商品 1/2</span>
+            </div>
+        </div>
+        <!--                        商品列表-->
+        <div class="x-clear">
+
+
+            <div class="x-goods-column">
+                <div class="x-goods-column-img">
+                    <img src="http://bbc.yichengsp.cn/public/admin/images/jitou.png"
+                         alt="">
+                </div>
+                <div class="x-goods-column-title">
+                    iPhone 5S 16G版
+                </div>
+                <div class="x-goods-column-subtitle">010101003</div>
+                <div class="x-goods-column-subtitle">3G手机（白色）WCDMA/GSM支持联通3G</div>
+                <div>
+                    <span class="x-goods-column-price">¥4580.00</span>
+                    <span class="x-goods-column-old-price">¥4580.00</span>
+                </div>
+                <div class="x-goods-column-activity">
+                    <div class="x-goods-column-activity-child">
+                        <div class="x-clear x-goods-column-activity-item">
+                            <div class="x-form-left">
+                                颜色
+                            </div>
+                            <div class="x-form-right">
+                                <select class="form-control">
+                                    <option>摩卡金</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="x-clear x-goods-column-activity-item">
+                            <div class="x-form-left">
+                                容量
+                            </div>
+                            <div class="x-form-right">
+                                <select class="form-control">
+                                    <option>6gb+164gb</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="x-clear x-goods-column-activity-item">
+                            <div class="x-form-left">
+                                制式
+                            </div>
+                            <div class="x-form-right">
+                                <select class="form-control">
+                                    <option>1</option>
+                                    <option>2</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="x-clear x-goods-column-activity-item">
+                            <button class="btn  btn-block btn-info" type="button">
+                                加入购物车
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="x-goods-column">
+                <div class="x-goods-column-img">
+                    <img src="http://bbc.yichengsp.cn/public/admin/images/dandongdaxiong.png"
+                         alt="">
+                </div>
+                <div class="x-goods-column-title">
+                    大象单冻大胸
+                </div>
+                <div class="x-goods-column-subtitle">010101003</div>
+                <div class="x-goods-column-subtitle">大象单冻大胸200/300g（修边）[10kg/箱] </div>
+                <div>
+                    <span class="x-goods-column-price">¥100.00</span>
+                    <span class="x-goods-column-old-price">¥130.00</span>
+                </div>
+                <div class="x-goods-column-activity">
+                    <div class="x-goods-column-activity-child">
+                        <div class="x-clear x-goods-column-activity-item">
+                            <div class="x-form-left">
+                                品牌
+                            </div>
+                            <div class="x-form-right">
+                                <select class="form-control">
+                                    <option>大象</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="x-clear x-goods-column-activity-item">
+                            <div class="x-form-left">
+                                重　量
+                            </div>
+                            <div class="x-form-right">
+                                <select class="form-control">
+                                    <option>10 kg</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="x-clear x-goods-column-activity-item">
+                            <div class="x-form-left">
+                                制式
+                            </div>
+                            <div class="x-form-right">
+                                <select class="form-control">
+                                    <option>1</option>
+                                    <option>2</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="x-clear x-goods-column-activity-item">
+                            <button class="btn  btn-block btn-info" type="button">
+                                加入购物车
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="x-goods-column">
+                <div class="x-goods-column-img">
+                    <img src="http://bbc.yichengsp.cn/public/admin/images/paitui.png"
+                         alt="">
+                </div>
+                <div class="x-goods-column-title">
+                    兰宝200/250箱装排腿
+                </div>
+                <div class="x-goods-column-subtitle">010101003</div>
+                <div class="x-goods-column-subtitle">兰宝200/250箱装排腿 9.6kg/箱 xxxxxxxx</div>
+                <div>
+                    <span class="x-goods-column-price">¥80.00</span>
+                    <span class="x-goods-column-old-price">¥110.00</span>
+                </div>
+                <div class="x-goods-column-activity">
+                    <div class="x-goods-column-activity-child">
+                        <div class="x-clear x-goods-column-activity-item">
+                            <div class="x-form-left">
+                                品　牌
+                            </div>
+                            <div class="x-form-right">
+                                <select class="form-control">
+                                    <option>大象</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="x-clear x-goods-column-activity-item">
+                            <div class="x-form-left">
+                                重　量
+                            </div>
+                            <div class="x-form-right">
+                                <select class="form-control">
+                                    <option>10 kg</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="x-clear x-goods-column-activity-item">
+                            <div class="x-form-left">
+                                制式
+                            </div>
+                            <div class="x-form-right">
+                                <select class="form-control">
+                                    <option>1</option>
+                                    <option>2</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="x-clear x-goods-column-activity-item">
+                            <button class="btn  btn-block btn-info" type="button">
+                                加入购物车
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--分页-->
+        <div class="pagination" style="float: right;margin-top: 100px">
+            <ul>
+                <li><a href="#">上一页</a></li>
+                <li><a href="#">1</a></li>
+                <li><a href="#">2</a></li>
+                <li><a href="#">3</a></li>
+                <li><a href="#">4</a></li>
+                <li><a href="#">5</a></li>
+                <li><a href="#">下一页</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="script"}
+{/block}

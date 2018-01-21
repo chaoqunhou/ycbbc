@@ -1,0 +1,103 @@
+<!--
+	创建时间：2017年2月7日 12:08:45
+	功能描述： 顶部， 
+-->
+<style>
+#menu-login{
+	text-align:center;
+}
+#menu-login .register{
+	margin-right:10px;
+}
+</style>
+<div class="header-top">
+	<div class="header-box">
+		<font id="login-info" class="login-info"></font>
+		<ul>
+<!-- 			<li><a class="menu-hd home" href="{:__URL('SHOP_MAIN')}" target="_top"><i></i>{:lang('shop_index')}</a></li> -->
+			<li class="menu-item">
+				<div class="menu" id="menu-login">
+					<a class="menu-hd myinfo" href="{:__URL('SHOP_MAIN/member/index')}" target="_blank"><b></b></a>
+					<div id="menu-2" class="menu-bd">
+						<span class="menu-bd-mask"></span>
+						<div class="menu-bd-panel">
+							<a href="{:__URL('SHOP_MAIN/member/index')}" target="_blank">{:lang('member_center')}</a>
+							<a href="{:__URL('SHOP_MAIN/member/orderlist')}" target="_blank">{:lang('member_buy_treasure')}</a>
+							<a href="{:__URL('SHOP_MAIN/member/addresslist')}" target="_blank">{:lang('member_address_management')}</a>
+							<a href="{:__URL('SHOP_MAIN/member/goodscollectionlist')}" target="_blank">{:lang('member_baby_collection')}</a>
+							<a href="javascript:logout();">{:lang('loginout')}</a>
+						</div>
+					</div>
+				</div>
+			</li>
+			<!-- <li class="menu-item cartbox"><a class="menu-hd cart" href="{:__URL('SHOP_MAIN/goods/cart')}" target="_top"><i></i>&nbsp;{:lang('goods_cart')}</a></li> -->
+			<li class="menu-item">
+				<div class="menu">
+					<a class="menu-hd we-chat" href="javascript:;" target="_top"><!-- <i></i> -->{:lang('attention_mall')}<b></b>
+					</a>
+					<div id="menu-5" class="menu-bd we-chat-qrcode">
+						<span class="menu-bd-mask"></span> <a target="_top"> <img src="{:__IMG($web_info['web_qrcode'])}" alt="{:lang('official_wechat')}"></a>
+						<p class="font-14">关注</p>
+					</div>
+				</div>
+			</li>
+<!-- 			<li class="menu-item"> -->
+<!-- 				<div class="menu"> -->
+<!-- 					<a href="{:__URL('SHOP_MAIN/helpcenter/index')}" class="menu-hd site-nav" target="_blank"> 商家支持 <b></b></a> -->
+<!-- 					<div id="menu-7" class="menu-bd site-nav-main"> -->
+<!-- 						<span class="menu-bd-mask"></span> -->
+<!-- 						<div class="menu-bd-panel"> -->
+<!-- 							<div class="site-nav-con"> -->
+<!-- 								<a href="{:__URL('SHOP_MAIN/helpcenter/index','id=2')}" target="_blank" title="常见问题">常见问题</a> -->
+<!-- 								<a href="{:__URL('SHOP_MAIN/helpcenter/index','id=7')}" target="_blank" title="网上支付">网上支付</a> -->
+<!-- 								<a href="{:__URL('SHOP_MAIN/helpcenter/index','id=5')}" target="_blank" title="验货与签收">验货与签收</a> -->
+<!-- 								<a href="{:__URL('SHOP_MAIN/helpcenter/index','id=9')}" target="_blank" title="退款说明">退款说明</a> -->
+<!-- 							</div> -->
+<!-- 						</div> -->
+<!-- 					</div> -->
+<!-- 				</div> -->
+<!-- 			</li> -->
+			<li class="menu-item"><a  href="{:__URL('APP_MAIN')}" class="menu-hd wap-nav" ><!-- <i></i> -->{:lang('mobile_terminal')}</a></li>
+			<li class="menu-item"><a href="{:__URL('SHOP_MAIN/helpcenter/index')}" class="menu-hd site-nav" target="_blank">{:lang('shop_help_center')}</a></li>
+		</ul>
+	</div>
+</div>
+
+<script type="text/javascript">
+$.ajax({
+	type:"post",
+	url:"{:__URL('SHOP_MAIN/components/getlogininfo')}",
+	success:function(data){
+// 		var login_info_html='';
+		if(data!=null && data!=""){
+// 				login_info_html='<a class="sn-login color" href="{:__URL('SHOP_MAIN/member/index')}" target="_top">'+data["user_info"]["nick_name"]+'</a><em>{:lang("welcome_back")}！</em><a class="sn-register" href="javascript:logout();" target="_top">{:lang('login_out')}</a>';
+// 				$('div.login-info').html('<font id="login-info" class="login-info NS-USER-ALREADY-LOGIN"><em><a href="{:__URL('SHOP_MAIN/member/index')}" target="_blank" class="color NS-USER-NAME">'+data["user_info"]["nick_name"]+'</a></em><a href="javascript:logout();" data-method="post" class="logout bg-color">{:lang('login_out')}</a></font>');
+			$(".myinfo").html(data["user_info"]["nick_name"]+'<b></b>');
+		
+		}else{
+// 			login_info_html='<em>{:lang("welcome_to")}{$title}</em><a class="login color" href="{:__URL('SHOP_MAIN/login/index')}" target="_top">{:lang("login")}</a>&nbsp;|&nbsp;<a class="register" href="{:__URL('SHOP_MAIN/login/registerbox')}" target="_top">{:lang("free_registration")}</a>';
+// 			$('div.login-info').html('<font id="login-info" class="login-info"><a class="login color" href="{:__URL('SHOP_MAIN/login/index')}" target="_top">{:lang('login')}</a>&nbsp;|&nbsp;<a class="register bg-color" href="{:__URL('SHOP_MAIN/login/registerbox')}" target="_top">{:lang('free_registration')}</a></font>');
+			$(".myinfo").hide();
+			$('#menu-login').html('<a class="login color" href="{:__URL('SHOP_MAIN/login/index')}" target="_top">{:lang('login')}</a>&nbsp;&nbsp;<span style="color:#e2e2e2;border-left:1px solid #e2e2e2;width:1px;height:18px;"></span>&nbsp;&nbsp;<a class="register" href="{:__URL('SHOP_MAIN/login/registerbox')}" target="_top" style="">{:lang('free_registration')}</a>');
+		}
+// 		$('#login-info').html(login_info_html);
+	}
+});
+
+function logout(){
+	$.ajax({
+		url: "{:__URL('SHOP_MAIN/member/logout')}",
+		type: "post",
+		success: function (res) {
+			if (res['code'] > 0) {
+				$.msg("{:lang('quit_successfully')}！");
+				window.location.reload();
+			} else {
+				if(res["message"]!=null){
+					$.msg(res["message"]);
+				}
+			}
+		}
+	})
+}
+</script>

@@ -1,0 +1,9 @@
+*.log
+*.jpg
+*.png
+niushop_b2b2c.sql
+/runtime
+/application/config.php
+/application/database.php
+/.idea
+/vendor

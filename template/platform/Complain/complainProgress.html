@@ -1,0 +1,470 @@
+{extend name="platform/base" /}
+{block name="resources"}
+<style>
+.col-md-2{text-aligin:right;width: 10rem;}
+.col-md-4{margin-bottom:5px;}
+.col-md-6{margin-bottom:5px;}
+.col-md-11{margin-bottom:5px;}
+.panel-body,.list-group {padding:15px 15px 0 15px;}
+.ncm-complain-talk { background-color: #FFF; border:1px dashed #EEE; max-height: 200px; word-break: normal; word-wrap: break-word; padding: 8px; overflow-y: scroll;}
+.ncm-complain-talk .admin { color: black;}
+.ncm-complain-talk .accuser { color: green;}
+.ncm-complain-talk .accused { color: red;}
+</style>
+{/block}
+
+{block name="main"}
+<section class="scrollable wrapper">
+	<div class="padder-v">
+		<form class="form-horizontal">
+			<section class="panel panel-default">
+				<header class="panel-heading font-bold"> 订单详情 </header>
+				<div class="panel-body">
+					
+						<div class="form-group">
+                            <label class="col-md-2 control-label">店铺名称</label>
+							<div class="col-md-4">
+                                <p class="form-control-static">{$complainInfo.accused_shop_name}</p>
+                            </div>
+							<label class="col-md-2 control-label">订单号</label>
+							<div class="col-md-4">
+								<p class="form-control-static">{$order.order_no}</p>
+							</div>
+
+						</div>
+					
+				</div>
+            </section>
+        </form>
+			<section class="panel panel-default">
+				<header class="panel-heading font-bold"> 投诉信息 </header>
+				<div class="panel-body">
+					<div class="form-group">
+						<label class="col-md-1 control-label center">投诉状态</label>
+						<div class="col-md-4">
+							<p class="form-control-static">
+							{switch name="$complainInfo.complain_state"}
+								{case value="10"}新投诉{/case}
+							    {case value="20"}待申诉{/case}
+							    {case value="30"}已申诉{/case}
+							    {case value="40"}待仲裁{/case}
+							    {case value="99"}已关闭{/case}
+							{/switch}
+							</p>
+						</div>
+						<label class="col-md-1 control-label center">投诉主题</label>
+						<div class="col-md-6">
+							<p class="form-control-static">{$complainInfo.complain_subject_content}</p>
+						</div>
+						<label class="col-md-1 control-label center">投诉人</label>
+						<div class="col-md-4">
+							<p class="form-control-static">{$complainInfo.accuser_user_name}</p>
+						</div>
+						<label class="col-md-1 control-label center">投诉证据</label>
+						<div class="col-md-6">
+							<p class="form-control-static">
+
+                                {if condition="$complainInfo.complain_pic1"}<a href="__ROOT__/{$complainInfo.complain_pic1}" target="_blank">投诉图片</a>{/if}&nbsp;&nbsp;
+                                {if condition="$complainInfo.complain_pic2"}<a href="__ROOT__/{$complainInfo.complain_pic2}" target="_blank">投诉图片</a>{/if}&nbsp;&nbsp;
+                                {if condition="$complainInfo.complain_pic3"}<a href="__ROOT__/{$complainInfo.complain_pic3}" target="_blank">投诉图片</a>{/if}
+
+							</p>
+                           </div>
+						
+                        <label class="col-md-1 control-label center">投诉时间</label>
+						<div class="col-md-4">
+							<p class="form-control-static">{$complainInfo.complain_datetime|getTimeStampTurnTime}</p>
+						</div>
+						
+					</div>
+                </div>               
+            </section>
+        <section class="panel panel-default">
+                        <header class="panel-heading font-bold"> 投诉的商品 </header>
+						<div class="table-responsive">
+							<table class="table table-striped b-t b-light text-sm">
+								<thead>
+									<tr>
+										<th>商品名称</th>
+										<th>单价</th>
+										<th>数量</th>
+									</tr>
+								</thead>
+								{if $order['order_goods_no_delive']}
+								{volist name="order['order_goods_no_delive']" id="vo"}
+								   <tr>
+										<td>
+											<img alt="" src="__ROOT__/{$vo['picture_info']['pic_cover_micro']}">
+											<a href="SHOP_MAIN/goods/goodsinfo?goodsid={$vo.goods_id}" target="_blank">{$vo['goods_name']}</a>
+										</td>
+										<td>￥{$vo['price']}</td>
+										<td>{$vo['num']}</td>
+									</tr>
+								{/volist}
+								{/if}
+							</table>
+						</div>
+                    </section>
+                    <section class="panel panel-default">
+                        <header class="panel-heading font-bold"> 投诉内容 </header>
+						<div class="table-responsive">
+							<table class="table table-striped b-t b-light text-sm">
+		
+								<tbody>
+									<tr>
+										<td>
+											<span>{$complainInfo.complain_content}</span>
+										</td>	
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</section>
+
+		{gt name="complainInfo.complain_state" value="20"}
+			<section class="panel panel-default">
+				<header class="panel-heading font-bold"> 申诉详情 </header>
+				<div class="panel-body">		
+					<div class="form-group">
+                        <label class="col-md-1 control-label">被投诉店铺</label>
+						<div class="col-md-4">
+							<p class="form-control-static">{$complainInfo.accused_shop_name}</p>
+                        </div>                          
+                        <label class="col-md-1 control-label">申诉证据</label>
+						<div class="col-md-6">
+						<p class="form-control-static">
+
+                            {if condition="$complainInfo.appeal_pic1"}<a href="__ROOT__/{$complainInfo.appeal_pic1}" target="_blank">申诉图片</a>{/if}&nbsp;&nbsp;
+                            {if condition="$complainInfo.appeal_pic2"}<a href="__ROOT__/{$complainInfo.appeal_pic2}" target="_blank">申诉图片</a>{/if}&nbsp;&nbsp;
+                            {if condition="$complainInfo.appeal_pic3"}<a href="__ROOT__/{$complainInfo.appeal_pic3}" target="_blank">申诉图片</a>{/if}
+
+						</p>
+						</div>							
+						<label class="col-md-1 control-label">申诉时间</label>
+						<div class="col-md-11">
+							<p class="form-control-static">{$complainInfo.appeal_datetime|getTimeStampTurnTime}</p>
+						</div>
+						<label class="col-md-1 control-label">申诉内容</label>
+						<div class="col-md-11">
+							<p class="form-control-static">{$complainInfo.appeal_message}</p>
+						</div>
+					</div>
+                </div>                
+            </section>
+            
+			<section class="panel panel-default">
+				<header class="panel-heading font-bold"> 对话详情 </header>
+				
+				<div class="panel-body">		
+					<div class="form-group" style="border: 1px dashed #D8D8D8; width: 640px; height: 200px;">
+                        <div id="div_talk" class="ncm-complain-talk">
+
+                        </div>
+                       
+					</div>
+                </div>
+                {neq name="complainInfo.complain_state" value="99"}
+                <form id="form2" name="form2" method="post" action="">
+				   	<label class="col-md-12 control-label"  >发布对话</label>
+ 
+				      <div class="col-md-12 bg-white list-group">                                          
+				          <textarea id="complain_talk" name="final_handle_message" class="form-control" required="" value="" aria-required="true"  style="width:400px; height:80px;"></textarea>
+				      </div>
+				               
+					<div class="col-sm-12">
+						<button type="button" class="btn btn-primary" id="btn_refresh">刷新对话</button>
+						<button type="button" class="btn btn-primary" id="btn_publish">发布对话</button>
+					</div>   
+				  </form>
+				  {/neq}
+				  
+				      
+            </section>
+                        				
+		{/gt}		
+
+			<section class="panel panel-default">
+				<header class="panel-heading font-bold"> 投诉处理 </header>
+				{eq name="complainInfo.complain_state" value="99"}
+					<div class="panel-body">
+					    <label class="col-sm-12 control-label">处理意见</label>					
+						<div class="col-sm-12">{$complainInfo.final_handle_message}</div>
+						<br>
+					    <label class="col-sm-12 control-label">处理时间</label>
+						<div class="col-sm-12">{$complainInfo.final_handle_datetime|getTimeStampTurnTime}</div>
+					</div>                			            				            
+				{/eq}				            
+				             
+				<div class="panel-body" style="display:none;" id="Handlecomplain">
+				  <form id="form1" name="form1" method="post" action="">
+				   	<label class="col-md-12 control-label">处理意见</label>
+ 
+				      <div class="col-md-12 bg-white list-group">                                          
+				          <textarea id="final_handle_message" name="final_handle_message" class="form-control" required="" value="" aria-required="true"  style="width:500px; height:100px;"></textarea>
+				     		<label class="col-md-8 error" for="category_name"></label>
+				      </div>
+				               
+					<div class="col-sm-12">
+						<button type="submit" class="btn btn-primary">确定</button>
+						<button type="reset" class="btn btn-primary" id="">取消</button>
+					</div>   
+				  </form>
+				</div>
+												                
+				<div class="col-sm-12" id="Handlebotton">
+					<div class="bg-white" style="padding:15px;"> 		                   
+						{eq name="complainInfo.complain_state" value="10"}
+						   	<button type="button" class="btn btn-primary" onclick="compalinVerify({$complainInfo.complain_id})">审核</button>
+						{/eq}
+						                  
+						{neq name="complainInfo.complain_state" value="99"}
+						  <button type="button" class="btn btn-primary" id="closecomplain" >关闭投诉</button>
+						{/neq}
+						                  
+						<a href="JavaScript:void(0);" class="btn btn-primary" onclick="history.go(-1)"><span>返回</span></a>				          
+					</div>
+				</div>
+                
+			</section>
+		
+	</div>
+</section>
+{/block}
+{block name="script"}
+<script type="text/javascript">
+
+
+
+
+$(function(){
+	$("#form1").validate();
+	$("#form2").validate();
+	
+	
+	
+$("#closecomplain").on("click",function(){
+	$("#Handlecomplain").css("display","block");
+	$("#Handlebotton").hide();
+	});
+	
+$(":reset").on("click",function(){
+	$("#Handlecomplain").css("display","none");
+	$("#Handlebotton").show();
+	});	
+
+});
+
+
+	function compalinVerify(complain_id)
+	{
+		$( "#dialog" ).dialog({
+            buttons: {
+                "确定": function() {
+                    $(this).dialog('close');
+                    $.ajax({
+            			type : "post",
+            			url : "PLATFORM_MAIN/Complain/compalinVerify",
+            			async : true,
+            			data : {
+            				"complain_id" : complain_id
+            			},
+            			success : function(data) {
+            				if(data["code"] > 0 ){
+            					showMessage('success', "审核成功","{:url('complainAppealList')}");
+            				}else{
+            					showMessage('error', "审核失败");
+            				}
+            			}
+            		})
+                },
+                "取消,#e57373": function() {
+                    $(this).dialog('close');
+                }
+                
+            },
+            contentText:"确定审核此投诉吗？",
+            title:"消息提醒"
+        });
+	}
+//	$("#closecomplain").click(function(){
+//	    complainClose();
+//	});
+//	/*关闭投诉*/
+//	function complainClose(){
+//	    var complain_handle_message = $("#final_handle_message").text();
+//	    var complain_id = {$complainInfo['complain_id']};
+//		$.ajax({
+//            type : "post",
+//            url : "PLATFORM_MAIN/Complain/compalinClose",
+//            async : true,
+//            data : {
+//                "complain_id" : complain_id,
+//				"complain_handle_message" : complain_handle_message,
+//            },
+//            success : function(data) {
+//                alert(JSON.stringify(data));
+//                if(data["code"] > 0 ){
+//                    showMessage('success', "处理成功","{:url('complainFinishList')}");
+//                }else{
+//                    showMessage('error', "处理失败");
+//                }
+//            }
+//		});
+//    }
+
+
+$("#btn_publish").click(function(){
+    if($("#complain_talk").val()=='') {
+        showMessage('error',"对话不能为空");
+    }
+    else {
+        publish_complain_talk();
+    }
+});
+$("#btn_refresh").click(function(){
+    get_complain_talk();
+});
+
+$(document).ready(function(){
+    get_complain_talk();
+});
+
+function get_complain_talk() {
+    var complain_id = "{$complainInfo.complain_id}";
+    $("#div_talk").empty();
+    $.ajax({
+        type:'POST',
+        url:"PLATFORM_MAIN/complain/getComplainTalk",
+        cache:false,
+        data:{'complain_id' : complain_id},
+        error:function(){
+            $("#div_talk").append("<p class='admin'>"+"目前没有对话"+"</p>");
+        },
+        success:function(talk_list){
+            if(talk_list.length >= 1) {
+                for(var i = 0; i < talk_list.length; i++)
+                {
+                    switch (talk_list[i].talk_user_type)
+                    {
+                        case 1:
+                            role_name = '投诉人';
+                            break;
+                        case 2:
+                            role_name = '被投诉人';
+                            break;
+                        case 3:
+                            role_name = '平台';
+                            break;
+                    }
+                    switch (talk_list[i].talk_user_type)
+                    {
+                        case 1:
+                            class_css = 'accuser';
+                            break;
+                        case 2:
+                            class_css = 'accused';
+                            break;
+                        case 3:
+                            class_css = 'admin';
+                            break;
+                    }
+                    switch (talk_list[i].talk_state)
+					{
+						case 1:
+						    state = '<a href="#" talk_id='+talk_list[i].talk_id+' onclick="forbit_talk(this)">屏蔽</a>';
+						    break;
+                        case 2:
+                            state = '<a href="#" talk_id='+talk_list[i].talk_id+' onclick="cancel_talk(this)">取消屏蔽</a>';
+                            break;
+					}
+                        $("#div_talk").append("<p class='"+class_css+"'>"+timeStampTurnTime(talk_list[i].talk_datetime)+"&nbsp;&nbsp;&nbsp;"+role_name+"&nbsp;&nbsp;&nbsp;"+talk_list[i].talk_user_name+" 说 : &nbsp;&nbsp;&nbsp;"+ talk_list[i].talk_content+"&nbsp;&nbsp;&nbsp;"+ state +"&nbsp;&nbsp;&nbsp;"+"</p>");
+
+
+                }
+            }
+            else {
+                $("#div_talk").append("<p class='admin'>"+"目前没有对话"+"</p>");
+            }
+        }
+    });
+}
+function forbit_talk(event) {
+    var for_target = $(event).parent();
+    var talk_id =$(event).attr('talk_id');
+//    for_target.hide();
+    set_talk_state(talk_id);
+}
+function cancel_talk(event) {
+
+    var cancel_target = $(event).parent();
+    var talk_id =$(event).attr('talk_id');
+//    for_target.show();
+    cancel_talk_state(talk_id);
+}
+
+
+
+function publish_complain_talk() {
+    var complain_id = "{$complainInfo.complain_id}";
+    var complain_talk = $("#complain_talk").val();
+    $.ajax({
+        type:'POST',
+        url:"PLATFORM_MAIN/complain/publishComplainTalk",
+        cache:false,
+        data:{
+            'complain_id' : complain_id,
+            'complain_talk' : complain_talk
+        },
+        success:function(data){
+            if(data['code']>0) {
+                showMessage('success','对话发布成功');
+                $("#complain_talk").val('');
+                get_complain_talk();
+            }
+            else {
+                showMessage('error',"对话发送失败");
+            }
+        }
+    });
+}
+function set_talk_state(talk_id){
+
+	$.ajax({
+		type : 'post',
+		url : 'PLATFORM_MAIN/complain/setTalkState',
+		data : {
+		  'talk_id' : talk_id
+		},
+		success : function(res){
+		    if(res.code>0){
+                showMessage('success',"操作成功");
+                location.href="PLATFORM_MAIN/complain/complainProgress?complain_id={$complainInfo.complain_id}";
+			}else{
+                showMessage('error',"操作失败");
+			}
+		}
+	});
+}
+
+function cancel_talk_state(talk_id){
+//	alert({$complainInfo['complain_id']});
+    $.ajax({
+        type : 'post',
+        url : 'PLATFORM_MAIN/complain/cancelTalkState',
+        data : {
+            'talk_id' : talk_id
+        },
+        success : function(res){
+            if(res.code>0){
+                showMessage('success',"操作成功");
+                location.href="PLATFORM_MAIN/complain/complainProgress?complain_id={$complainInfo.complain_id}";
+            }else{
+                showMessage('error',"操作失败");
+            }
+        }
+    });
+}
+</script>
+{/block}
+
+

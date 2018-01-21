@@ -1,0 +1,115 @@
+{extend name="platform/base" /}
+{block name="resources"}
+<script type="text/javascript" src="__STATIC__/My97DatePicker/WdatePicker.js"></script>
+<style>
+
+</style>
+{/block}
+
+{block name="main"}
+<section class="panel panel-default">
+	<table class="table table-striped b-t b-light text-sm">
+		<thead>
+			<tr>
+				<th width="20"><input type="checkbox"></th>
+				<th class="center">投诉主题</th>
+				<th class="center">投诉描述</th>
+				<th class="center">操作</th>
+			</tr>
+		</thead>
+		<tbody id="list">
+		
+		</tbody>
+	</table>
+	{include file="platform/page" /}
+</section>
+
+	
+{/block} 
+{block name="script"}
+<script type="text/javascript">
+$(function(){
+    LoadingInfo(1);
+});
+	//加载数据
+	function LoadingInfo(pageIndex) {
+		// var search_text = $("#search_text").val();
+		$.ajax({
+			type : "post",
+			url : "PLATFORM_MAIN/complain/complainSubjectList",
+			async : true,
+			data : {
+				"pageIndex" : pageIndex
+			},
+			success : function(data) {
+				var html = '';
+				$("#total_count_num").text(data["total_count"]);
+				$("#page_count_num").text(data["page_count"]);
+				$("#page_count").val(data["page_count"]);
+				$("#pageNumber a").remove();
+				if (data["data"].length > 0) {
+					for (var i = 0; i < data["data"].length; i++){
+						html += '<tr>';
+						html += '<td><input type="checkbox" name="sub" value="'+ data['data'][i]['complain_subject_id']+'"></td>';
+						html += '<td class="center">'+ data["data"][i]["complain_subject_content"] +'</td>';
+						html += '<td class="center">'+ data["data"][i]["complain_subject_desc"] +'</td>';
+						html += '<td class="center"><a href="javascript:delAttr(' + data["data"][i]["complain_subject_id"] + ')">删除</a></td> ';
+						html += '</tr>';
+					}
+				} else {
+					html += '<tr align="center"><th colspan="6">暂无符合条件的数据记录</th></tr>';
+				}
+				$("#list").html(html);
+				var totalpage = $("#page_count").val();
+				if (totalpage == 1) {
+					changeClass("all");
+				}
+				var $html = pagenumShow(jumpNumber,totalpage,{$pageshow});
+				$("#pageNumber").append($html);
+			}
+		});
+	}
+	/* 删除类型 */
+	function delAttr(complain_subject_id) {
+		$( "#dialog" ).dialog({
+			buttons: {
+				"确定": function() {
+					$(this).dialog('close');
+					$.ajax({
+						type : "post",
+						url : "PLATFORM_MAIN/complain/delComplainSubject",
+						data : {
+							'complain_subject_id' : complain_subject_id,
+						},
+						
+						success : function(data) {
+							if (data['code'] > 0) {
+	 							showMessage('success', data["message"],'PLATFORM_MAIN/complain/complainSubjectList');
+	 							
+							}else if(data['code'] == 0){
+	 							showMessage('error', data["message"]);
+							}else if(data['code'] == -1){
+								showMessage('error', '不能删除！');
+							}
+						}
+					});
+				},"取消,#e57373" : function(){
+					$(this).dialog('close');
+				}
+			},
+			contentText:"你确定删除吗？",
+			title:"消息提醒"
+		});
+	}
+</script>
+{/block}
+
+
+
+
+
+
+
+
+
+

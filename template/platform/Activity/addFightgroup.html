@@ -1,0 +1,193 @@
+{extend name="platform/base" /}
+{block name="resources"}
+<script type="text/javascript" src="__STATIC__/My97DatePicker/WdatePicker.js"></script>
+<style>
+    .col-md-2 {
+        line-height: 35px;
+    }
+</style>
+{/block}
+{block name="main"}
+<section class="panel panel-default">
+    <header class="panel-heading font-bold"> 添加拼团 </header>
+    <div class="panel-body">
+        <form class="form-horizontal" id="fightgroup_form" name="form">
+            <div class="form-group">
+                <label class="col-sm-2 control-label">拼团标题</label>
+                <div class="col-md-2">
+                    <input type="text" class="form-control" id="group_name" name="brand_name" value="{$memberMsgTypeInfo.msg_title}" required>
+                </div>
+                <label class="col-md-8 error" for="brand_name" ></label>
+            </div>
+            <div class="line line-dashed line-lg pull-in"></div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">拼团定金百占比</label>
+                <div class="col-md-2">
+                    <input type="text" class="form-control" id="deposit_money_rate"  placeholder="0.00" name="brand_name" value="{$memberMsgTypeInfo.msg_title}" style="width: 150px;float: left;" required>%
+                </div>
+                <label class="col-md-8 error" for="brand_name" ></label>
+            </div>
+            <div class="line line-dashed line-lg pull-in"></div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">拼团商品折扣</label>
+                <div class="col-md-2">
+                    <input type="text" class="form-control" id="group_discount" placeholder="0.00"
+                           value="{$info['shop_platform_commission_rate']}" style="width: 150px;float: left;" required>%
+                </div>
+            </div>
+            <div class="line line-dashed line-lg pull-in"></div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">拼团所需人数</label>
+                <div class="col-md-2">
+                    <input type="text" class="form-control" id="max_number" name="brand_name" value="{$memberMsgTypeInfo.msg_title}" required>
+                </div>
+                <label class="col-md-8 error" for="brand_name" ></label>
+            </div>
+            <div class="line line-dashed line-lg pull-in"></div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">是否开启</label>
+                <div class="col-md-4">
+                    <label class="switch">
+                        <input id="group_state" type="checkbox" >
+                        <span></span>
+                    </label>
+                </div>
+            </div>
+            <div class="line line-dashed line-lg pull-in"></div>
+
+
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">拼团宣传图片</label>
+                <div class="col-md-10">
+                    <p><img id="imgLogo" src="" class="imglogo"/></p>
+                    <a href="javascript:void(0);" style="display:block;position:relative;z-index:1;">
+                        <span style="width: 97px;height: 34px;position: absolute;left: 0;top: 0;z-index: 2;cursor: pointer;">
+                        <input hidefocus="true" size="1" class="input-file" name="file_upload"
+                               id="uploadImg" nc_type="change_store_label" type="file" style="width: 97px;height: 34px;padding: 0;margin: 0;border: none 0;opacity: 0;filter: alpha(opacity = 0);cursor: pointer;"
+                               onchange="imgUpload(this);">
+                            <input type="hidden" id="logo" value=""/>
+                        </span>
+                        <a class="btn btn-default"><i class="fa fa-cloud-upload text"></i><span class="text">上传图片</span></a>
+                    </a>
+                </div>
+            </div>
+            <div class="line line-dashed line-lg pull-in"></div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">排序：</label>
+                <div class="col-md-1">
+                    <input type="text" class="form-control" id="group_sort" value="0" placeholder="0" onkeyup='this.value=this.value.replace(/\D/gi,"")' required>
+                </div>
+            </div>
+            <div class="line line-dashed line-lg pull-in"></div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">开始时间：</label>
+                <div class="col-md-1">
+                    <input type="text" id='startDate' placeholder="请选择开始日期" class="input-medium" style="float:left;width:203px;margin-right:5px;padding:5px 10px;height:30px;border:1px solid #d9d9d9;" onclick="WdatePicker()"/>
+                </div>
+            </div>
+            <div class="line line-dashed line-lg pull-in"></div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">结束时间：</label>
+                <div class="col-md-1">
+                    <input type="text" id='endDate' placeholder="请选择结束日期" class="input-medium" style="float:left;width:203px;margin-right:5px;padding:5px 10px;height:30px;border:1px solid #d9d9d9;" onclick="WdatePicker()" />
+                </div>
+            </div>
+            <div class="line line-dashed line-lg pull-in"></div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">拼团介绍:</label>
+                <div class="col-sm-4">
+                    <div id="editor" class="form-control" style="overflow: scroll; height: 150px;">{$memberMsgTypeInfo.msg_dec}</div>
+                </div>
+            </div>
+            <div class="line line-dashed line-lg pull-in"></div>
+
+            <div class="form-group">
+                <div class="col-sm-4 col-sm-offset-2">
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+<script>
+
+    $().ready(function() {
+        $("#fightgroup_form").validate({
+            submitHandler : function() {
+                addFightgroupAjax();
+            }
+        });
+    });
+    /**
+     *添加活动信息
+     */
+    function addFightgroupAjax() {
+        var group_name = $("#group_name").val();
+        var group_sort = $("#group_sort").val();
+        var start_date = $("#startDate").val();
+        var deposit_money_rate = $("#deposit_money_rate").val();
+        var group_discount = $("#group_discount").val();
+        var max_number = $("#max_number").val();
+        var end_date = $("#endDate").val();
+        var group_banner = $("#logo").val();
+        var group_content = $("#editor").html();
+        if ($("#group_state").prop("checked")) {
+            var group_state = 1;
+        } else {
+            var group_state = 0;
+        }
+        $.ajax({
+            type : "post",
+            url : "{:__URL('PLATFORM_MAIN/activity/addFightgroup')}",
+            data : {
+                'group_name' : group_name,
+                'group_sort' : group_sort,
+                'start_date' : start_date,
+                'end_date' : end_date,
+                'group_banner' : group_banner,
+                'group_content' : group_content,
+                'group_state' : group_state,
+                'deposit_money_rate' : deposit_money_rate,
+                'group_discount' : group_discount,
+                'max_number' : max_number
+            },
+            success : function(data) {
+                if (data["code"] > 0) {
+
+                    showMessage('success', '添加成功！','{:__URL('PLATFORM_MAIN/activity/fightgroupList')}');
+                } else {
+                    showMessage('error', '添加失败');
+                }
+            }
+        });
+    }
+
+    /**
+     *图片上传
+     */
+    /* 	function imgUpload(event) {
+            var fileid = $(event).attr("id");   var str = $(event).next().attr("id");
+            fileCommonUpload("UPLOAD_URL", fileid,"__UPLOAD__",str);
+        } */
+    function imgUpload(event) {
+        var fileid = $(event).attr("id");
+        var data = { 'file_path' : UPLOADCOMMON };
+        uploadFile(fileid,data,function(res){
+            if(res.code){
+                $("#imgLogo").attr("src","__UPLOAD__/"+res.data);
+                $("#logo").val(res.data);
+                showTip(res.message,"success");
+            }else{
+                showTip(res.message,"error");
+            }
+        });
+    }
+</script>
+{/block}

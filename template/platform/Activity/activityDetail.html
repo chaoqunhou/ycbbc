@@ -1,0 +1,265 @@
+{extend name="platform/base" /}
+{block name="resources"/}
+<style type="text/css">
+
+</style>
+{/block}
+{block name="main"}
+
+<div class="row padder-v">
+    <div class="col-sm-4">
+        <button class="btn btn-sm btn-default" type="button"  onclick="deleteCount()">批量删除</button>
+    </div>
+
+    <div class="col-sm-2">
+        <input type="text" id="item_name" class="input-sm form-control" placeholder="请输入商品名称">
+    </div>
+    <div class="col-sm-2">
+        <input type="text" id="shop_name" class="input-sm form-control" placeholder="请输入店铺名称">
+    </div>
+    <div class="col-sm-2">
+        <div style="width:25%;float:left;line-height: 30px;">审核状态</div>
+        <select class="input-sm form-control" id="activity_detail_state" style="width:75%;float:left;">
+            <option value="">全部</option>
+            <option value="0">待审核</option>
+            <option value="1">通过</option>
+            <option value="2">未通过</option>
+        </select>
+    </div>
+    <div class="col-sm-1">
+        <button class="btn btn-sm btn-default" type="button" onclick="LoadingInfo(1)">搜索</button>
+    </div>
+</div>
+
+<section class="panel panel-default">
+    <div class="table-responsive">
+        <table class="table table-striped b-t b-light text-sm">
+            <thead>
+            <tr>
+                <th width="20"><input type="checkbox"></th>
+                <th class="center">排序</th>
+                <th class="center">商品名称</th>
+                <th class="center">所属店铺</th>
+                <th class="center">状态</th>
+                <th class="center">操作</th>
+
+            </tr>
+            </thead>
+            <tbody id="list">
+            <tr></tr>
+            </tbody>
+        </table>
+    </div>
+    {include file="platform/page" /}
+</section>
+
+{/block}
+{block name="script"}
+
+<script type="text/javascript">
+	var activity_id = "{$activity_id}";
+    $(function(){
+        LoadingInfo(1);
+    });
+    function LoadingInfo(page_index) {
+        
+        var item_name = $("#item_name").val();
+        var shop_name = $("#shop_name").val();
+        var activity_detail_state = $("#activity_detail_state").val();
+        $.ajax({
+            type : "post",
+            url : "{:__URL('PLATFORM_MAIN/activity/activityDetail')}",
+            async : true,
+            data : {
+                "page_index" : page_index,
+                "item_name" : item_name,
+                "shop_name" : shop_name,
+                "activity_id" : activity_id,
+                "activity_detail_state" : activity_detail_state
+             },
+            success : function(data) {
+//                alert(JSON.stringify(data));
+                var html = '';
+                $("#total_count_num").text(data["total_count"]);
+                $("#page_count_num").text(data["page_count"]);
+                $("#page_count").val(data["page_count"]);
+                $("#pageNumber a").remove();
+                if (data["data"].length > 0) {
+                    for (var i = 0; i < data["data"].length; i++) {
+                        html += '<tr align="center">';
+                        html += '<td><div class="cell"><label ><input name="sub" type="checkbox" value="'+ data['data'][i]["activity_detail_id"]+'" ></label></div></td>';
+
+                        html += '<td class="center"><input style="width:50px;" type="text" id="sort" value="' + data['data'][i]["activity_detail_sort"] + '" onchange="setSort('+data["data"][i]["activity_detail_id"]+',this);"/></td>';
+
+                        html += '<td >'+ data['data'][i]["item_name"]+'</td>';
+//
+                        html += '<td >'+ data['data'][i]["shop_name"]+'</td>';
+                        if(data['data'][i]["activity_detail_state"] == 0){
+                            html += '<td>待审核</td>';
+                        }else if(data['data'][i]["activity_detail_state"] == 1){
+                            html += '<td>通过</td>';
+                        }else if(data['data'][i]["activity_detail_state"] == 2){
+                            html += '<td>未通过</td>';
+                        }else if(data['data'][i]["activity_detail_state"] == 3){
+                            html += '<td>已开始</td>';
+                        }else if(data['data'][i]["activity_detail_state"] == 4){
+                            html += '<td>已结束</td>';
+                        }
+
+                        if(data['data'][i]["activity_detail_state"] == 0){
+                            html += '<td><a href="javascript:passHandle('+data['data'][i]['activity_detail_id']+');">通过&nbsp;|</a> <a href="javascript:refuseHandle('+data['data'][i]['activity_detail_id']+');">未通过&nbsp;|</a> <a href="javascript:deleteHandle('+data['data'][i]['activity_detail_id']+');">删除&nbsp;|</a></td>';
+                        }else if(data['data'][i]["activity_detail_state"] == 1){
+                            html += '<td><a href="javascript:refuseHandle('+data['data'][i]['activity_detail_id']+');">未通过</a></td>';
+                        }else if(data['data'][i]["activity_detail_state"] == 2){
+                            html += '<td><a href="javascript:passHandle('+data['data'][i]['activity_detail_id']+');">通过&nbsp;|</a> <a href="javascript:deleteHandle('+data['data'][i]['activity_detail_id']+');">删除&nbsp;|</a></td>';
+                        }else if(data['data'][i]["activity_detail_state"] == 3 || data['data'][i]["activity_detail_state"] == 4){
+                            html += '<td></td>';
+                        }else{
+                            html += '<td></td>';
+                        }
+                        html += '</tr>';
+                    }
+                } else {
+                    html += '<tr align="center"><th colspan="5">暂无符合条件的数据记录</th></tr>';
+                }
+                $("#list").html(html);
+                var totalpage = $("#page_count").val();
+                if (totalpage == 1) {
+                    changeClass("all");
+                }
+                var $html = pagenumShow(jumpNumber,totalpage,{$pageshow})
+                $("#pageNumber").append($html);
+
+            }
+        });
+    }
+    //全选
+    function CheckAll(event){
+        var checked = event.checked;
+        $(".style0list tbody input[type = 'checkbox']").prop("checked",checked);
+    }
+
+    //通过审核
+    function passHandle(activity_detail_id){
+        $.ajax({
+            type : "post",
+            url : "{:__URL('PLATFORM_MAIN/activity/passHandle')}",
+            data : {
+                'activity_detail_id' : activity_detail_id
+            },
+            async : true,
+            success : function(data) {
+                if (data['code'] > 0) {
+                    showMessage('success', '审核成功');
+                    location.href=__URL("PLATFORM_MAIN/activity/activityDetail?activity_id="+activity_id);
+                } else {
+                    showMessage('error', '审核失败');
+
+                }
+            }
+        });
+    }
+    //拒绝通过
+    function refuseHandle(activity_detail_id){
+        $.ajax({
+            type : "post",
+            url : "{:__URL('PLATFORM_MAIN/activity/refuseHandle')}",
+            data : {
+                'activity_detail_id' : activity_detail_id
+            },
+            success : function(data) {
+                if (data['code'] > 0) {
+                    showMessage('success', '拒绝成功');
+                    location.href=__URL("PLATFORM_MAIN/activity/activityDetail?activity_id="+activity_id);
+                } else {
+                    showMessage('error', '拒绝失败');
+
+                }
+            }
+        });
+    }
+    //删除
+    function deleteHandle(activity_detail_id){
+        $.ajax({
+            type : "post",
+            url : "PLATFORM_MAIN/activity/deleteActivityDetail",
+            data : {
+                'activity_detail_id' : activity_detail_id
+            },
+            success : function(data) {
+                if (data['code'] > 0) {
+                    showMessage('success', '删除成功');
+                    location.href="PLATFORM_MAIN/activity/activityDetail?activity_id="+activity_id;
+                } else {
+                    showMessage('error', '删除失败');
+
+                }
+            }
+        });
+    }
+
+//    //批量删除
+//    function aaa(){
+//        var activity_detail_ids = new array();
+//        $("#list input[type='checkbox']:checked").each(function()
+//        {
+//            if (!isNaN($(this).val())) {
+//                activity_detail_ids.push($(this).val());
+//                alert(JSON.stringify(activity_detail_ids));
+//                return false;
+//                var state = $(this).attr("state");
+//                if(state != -1){
+//                    $( "#dialog" ).dialog({
+//                        buttons: {
+//                            "确定,#e57373": function() {
+//                                $(this).dialog('close');
+//                            }
+//                        },
+//                        contentText:"记录中包含非待审核状态的商品",
+//                        title:"消息提醒",
+//                    });
+//                    return false;
+//                }
+//                goods_ids = $(this).val() + "," + goods_ids;
+//            }
+//        });
+//        goods_ids = goods_ids.substring(0, goods_ids.length - 1);
+//
+//        if(goods_ids == ""){
+//            $( "#dialog" ).dialog({
+//                buttons: {
+//                    "确定,#e57373": function() {
+//                        $(this).dialog('close');
+//                    }
+//                },
+//                contentText:"请选择需要操作的记录",
+//                title:"消息提醒",
+//            });
+//            return false;
+//        }
+//        modifyGoodsOnline(goods_ids,status);
+//    }
+    function setSort(id,e){
+        var sortVal = $(e).val();
+        $.ajax({
+            type:"post",
+            url:"PLATFORM_MAIN/activity/setActivityDetailSort",
+            data:{
+                'activity_detail_id' : id,
+                'activity_detail_sort' : sortVal
+            },
+            async:true,
+            success: function (data) {
+                if(data['code'] > 0){
+
+                    showMessage('success', '修改成功');
+                    location.href="PLATFORM_MAIN/activity/activityDetail?activity_id="+activity_id;
+                }else{
+                    showMessage('error', '修改失败');
+                    location.href="PLATFORM_MAIN/activity/activityDetail?activity_id="+activity_id;
+                }
+            }
+        });
+    }
+</script>
+{/block}

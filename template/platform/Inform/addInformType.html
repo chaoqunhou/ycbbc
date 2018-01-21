@@ -1,0 +1,82 @@
+{extend name="platform/base" /} 
+{block name="main"}
+<section class="panel panel-default">
+	<header class="panel-heading font-bold"> 添加类型 </header>
+	<div class="panel-body">
+		<form class="form-horizontal" id="addInformtype_form" name="form">
+			<div class="form-group">
+				<label class="col-sm-2 control-label">举报类型</label>
+				<div class="col-md-2">
+					<input type="text" class="form-control" id="inform_type_name" name="inform_type_name" required value="">
+				</div>
+				<label class="col-md-8 error" for="category_name"></label>
+			</div>
+			<div class="line line-dashed line-lg pull-in"></div> 
+			
+			<div class="form-group">
+				<label class="col-sm-2 control-label">状态</label>
+				<div class="col-sm-2">
+					<label class="switch"><input id="inform_type_state" type="checkbox"><span></span></label>
+				</div>
+			</div>			
+			<div class="line line-dashed line-lg pull-in"></div>
+
+			
+			<div class="form-group">
+				<label class="col-sm-2 control-label">描述</label>
+				<div class="col-sm-4">
+					<div id="editor" class="form-control" style="overflow: scroll; height: 150px;"></div>
+				</div>
+			</div>
+			<!-- 书签 -->
+			<div class="line line-dashed line-lg pull-in"></div>
+			<div class="form-group">
+				<div class="col-sm-4 col-sm-offset-2">
+					<button type="submit" class="btn btn-primary">保存</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</section>
+<script>
+	$().ready(function() {
+		$("#addInformtype_form").validate({
+			submitHandler : function() {
+				addInformTypeAjax();
+			}
+		});
+	});
+	/**
+	 *添加模块
+	 */
+		function addInformTypeAjax() {
+			var inform_type_name = $("#inform_type_name").val();
+			var inform_type_desc = $("#editor").text();
+			
+			if ($("#inform_type_state").prop("checked")) {
+				var inform_type_state = 1;
+			} else {
+				var inform_type_state = 2;
+			}
+
+		$.ajax({
+			type : "post",
+			url : "PLATFORM_MAIN/Inform/addinformtype",
+			data : {
+				'inform_type_name' : inform_type_name,
+				'inform_type_state' : inform_type_state,
+				'inform_type_desc' : inform_type_desc
+			},
+			async : true,
+			success : function(data) {
+				if (data["code"] > 0) {
+					showMessage('success', data["message"],'PLATFORM_MAIN/Inform/informtypelist');
+				} else {
+					showMessage('error', data["message"]);
+				}
+			}
+		});
+	}
+
+</script>
+{/block}

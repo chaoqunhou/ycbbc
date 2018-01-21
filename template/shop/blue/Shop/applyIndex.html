@@ -1,0 +1,178 @@
+{extend name="shop/blue/base" /}
+{block name="resources"}
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/ns_shop_common.css">
+<link rel="stylesheet" type="text/css" href="__TEMP__/{$style}/public/css/store_joinin.css">
+<script type="text/javascript" src="__TEMP__/{$style}/public/js/apply_jq.js"></script>
+<script type="text/javascript" src="__TEMP__/{$style}/public/js/jquery.json.js"></script>
+<!-- <script type="text/javascript" src="__TEMP__/{$style}/public/js/transport.js"></script> -->
+<script type="text/javascript" src="__TEMP__/{$style}/public/js/user.js"></script>
+<style>
+.header-line {
+    background-color: none;;
+     border-bottom: none;
+}
+</style>
+{/block}
+{block name="commonTop"}{/block}
+{block name="head"}{/block}
+{block name="headGoodType"}{/block}
+
+{block name="main"}
+<div class="header">
+			<h2 class="header-logo"><a href="{:__URL('SHOP_MAIN/index/index')}">
+			<img src="__UPLOAD__/{$web_info['logo']}"></a></h2>
+			<ul class="header-menu">
+				<li class="current">
+				        {if condition="$apply_state eq 'apply' "} <a href="{:__URL('SHOP_MAIN/shop/applyFristAgreement')}" class="joinin">商家入驻申请</a>
+						
+						{/if}
+						{if condition="$apply_state eq 'is_system' "} <a href="{:__URL('ADMIN_MAIN')}" class="joinin">查看入驻进度</a>
+					
+						{/if}
+			
+				</li>
+				<li class="">
+					<a href="{:__URL('ADMIN_MAIN')}" class="login"><i></i>商家管理中心</a>
+				</li>
+				<li class="">
+					<a href="{:__URL('SHOP_MAIN/cms/articleList?id=22&class_id=12')}" class="faq"><i></i>商家帮助指南</a>
+				</li>
+			</ul>
+		</div>
+		<div class="header-line"><span></span></div>
+		<div class="banner">
+			<div class="user-box">
+				<div class="user-joinin">
+					<h3>亲爱的：{$member_info.user_name}</h3>
+					<dl>
+						<dt>欢迎来到 B2B2C 商城</dt>
+						<dd> 若您还没有填写入驻申请资料<br> 请点击“
+							<a href="javascript:void(0)">我要入驻</a>”进行入驻资料填写</dd>
+						<dd>若您的店铺还未开通<br> 请通过“
+							<a href="javascript:void(0)">查看入驻进度</a>”了解店铺开通的最新状况 </dd>
+					</dl>
+					<div class="bottom">
+					    {if condition="$apply_state eq 'is_system' "}
+					     	<a href="{:__URL('ADMIN_MAIN')}">进入商家管理中心</a>
+						{elseif condition="$apply_state eq 'apply' "/}
+							<a href="{:__URL('SHOP_MAIN/shop/applyFristAgreement')}">我要入驻</a>
+						{elseif condition="$apply_state eq 'is_apply' or $apply_state eq 'refuse_apply' "/}
+							<a href="{:__URL('SHOP_MAIN/shop/applySecondCompanyInfo')}">查看入驻进度</a>
+						{/if}
+						
+					</div>
+				</div>
+			</div>
+
+			<div id="banner">
+				<div id="ctrl1"> <span class="hov"></span> <span></span>  </div>
+				<div id="img1" class="full-screen-slides" style="overflow:hidden;height:258px">
+					<a href="javascript:;"><img src="__TEMP__/{$style}/public/images/apply/apply_banner01.png" alt=""></a>
+					<a href="javascript:;"><img src="__TEMP__/{$style}/public/images/apply/apply_banner02.png" alt=""></a>
+				</div>
+			</div>
+		</div>
+		<div class="indextip">
+			<div class="container">
+				<span class="title"><i></i><h3>贴心提示</h3></span>
+				<span class="content">【B2B2C】平台提供各类专业管家服务，协助您开通店铺、运营店铺、组织营销活动及分析运营数据，悉心为您解答各类疑问，引导您按相关规则展开运营；我们将竭尽全力，为您的店铺保驾护航。</span>
+			</div>
+		</div>
+		<div class="w1000 mt30">
+			<h2 class="index-title">入驻流程</h2>
+			<div class="joinin-index-step">
+				<span class="step"><i class="a"></i>签署入驻协议</span><span class="arrow"></span>
+				<span class="step"><i class="b"></i>商家信息提交</span><span class="arrow"></span>
+				<span class="step"><i class="c"></i>平台审核资质</span><span class="arrow"></span>
+				<span class="step"><i class="d"></i>商家缴纳费用</span><span class="arrow"></span>
+				<span class="step"><i class="e"></i>店铺开通</span>
+			</div>
+			<h2 class="index-title">入驻指南</h2>
+			<div class="joinin-info">
+				<ul class="tabs-nav">
+					<a href="javascript:;"><li class="tabs-selected" id="tab-a">
+						<h3>招商方向</h3>
+					</li></a>
+					<a href="javascript:;"><li class=""  id="tab-b">
+						<h3>招商标准</h3>
+					</li></a>
+					<a href="javascript:;"><li class=""  id="tab-c">
+						<h3>资质要求</h3>
+					</li></a>
+					<a href="javascript:;"><li class=""  id="tab-d">
+						<h3>资费标准</h3>
+					</li></a>
+				</ul>
+				<div class="tabs-panel" id="tabs-1">
+					{$guide_list[0]['content']}
+				</div>
+				<div class="tabs-panel" id="tabs-2" style="display:none;">
+					{$guide_list[1]['content']}
+				</div>
+				<div class="tabs-panel" id="tabs-3" style="display:none;">
+					{$guide_list[2]['content']}
+				</div>
+				<div class="tabs-panel" id="tabs-4" style="display:none;">
+					{$guide_list[3]['content']}
+				</div>
+			</div>
+		</div>
+{/block}
+{block name="RightSideBar"}{/block}
+{block name="bottom"}
+{include file='shop/blue/controlBottom'/}
+{/block}
+{block name="javascript"}
+<script>
+$(function() {
+	$("#tab-a").click(function(){
+		$("#tab-a").addClass("tabs-selected");
+		$("#tab-b").removeClass("tabs-selected");
+		$("#tab-c").removeClass("tabs-selected");
+		$("#tab-d").removeClass("tabs-selected");
+		$("#tabs-1").show();
+		$("#tabs-2").hide();
+		$("#tabs-3").hide();
+		$("#tabs-4").hide();
+	})
+	$("#tab-b").click(function(){
+		$("#tab-b").addClass("tabs-selected");
+		$("#tab-a").removeClass("tabs-selected");
+		$("#tab-c").removeClass("tabs-selected");
+		$("#tab-d").removeClass("tabs-selected");
+		$("#tabs-1").hide();
+		$("#tabs-2").show();
+		$("#tabs-3").hide();
+		$("#tabs-4").hide();
+	})
+	$("#tab-c").click(function(){
+		$("#tab-c").addClass("tabs-selected");
+		$("#tab-b").removeClass("tabs-selected");
+		$("#tab-a").removeClass("tabs-selected");
+		$("#tab-d").removeClass("tabs-selected");
+		$("#tabs-1").hide();
+		$("#tabs-2").hide();
+		$("#tabs-3").show();
+		$("#tabs-4").hide();
+	})
+	$("#tab-d").click(function(){
+		$("#tab-d").addClass("tabs-selected");
+		$("#tab-b").removeClass("tabs-selected");
+		$("#tab-c").removeClass("tabs-selected");
+		$("#tab-a").removeClass("tabs-selected");
+		$("#tabs-1").hide();
+		$("#tabs-2").hide();
+		$("#tabs-3").hide();
+		$("#tabs-4").show();
+	})
+})
+
+
+</script>
+
+
+
+
+
+{/block}

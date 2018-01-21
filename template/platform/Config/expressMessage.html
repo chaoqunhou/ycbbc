@@ -1,0 +1,87 @@
+{extend name="platform/base" /}
+{block name="resources"/}
+<style>
+p {
+    margin: 6px 0 10px;
+}
+</style>
+
+{/block}
+{block name="main"}
+<section class="panel panel-default">
+	<header class="panel-heading font-bold"> 物流跟踪设置 </header>
+	<div class="panel-body">
+		<form class="form-horizontal">
+			<div class="form-group">
+				<label class="col-sm-2 control-label">接口名称</label>
+				<div class="col-md-4" style="width:80%;">
+					<p>快递鸟</p>
+				</div>
+			</div>
+			<div class="line line-dashed line-lg pull-in"></div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">APPID:</label>
+				<div class="col-md-4" style="width:80%;">
+					<input type="text" class="form-control" id=appid value="{$emconfig.value.appid}" style="width:30%;">
+					<p class="hint" style="color:#BBB;margin-top:10px;">快递鸟</p>
+				</div>
+			</div>
+			<div class="line line-dashed line-lg pull-in"></div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">APPKEY:</label>
+				<div class="col-md-4" style="width:80%;">
+					<input type="text" class="form-control" id="appkey" value="{$emconfig.value.appkey}" style="width:30%;">
+					<p class="hint" style="color:#BBB;margin-top:10px;">应用密钥</p>
+				</div>
+			</div>
+			<div class="line line-dashed line-lg pull-in"></div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">说明:</label>
+				<div class="col-md-4" style="width:80%;">
+					<p><a href="http://www.kdniao.com/" target="_brank">点击申请</a></p>
+					<p class="hint" style="color:#BBB;margin-top:10px;">点击进行申请</p>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">是否启用:</label>
+				<div class="col-md-4" style="width:80%;">
+					<label class="radio inline"><input type="radio" name="is_use" value="1" {if condition="$emconfig['is_use'] eq 1"}checked="checked"{/if}>是</label> 
+					<label class="radio inline"><input type="radio" name="is_use" value="0" {if condition="$emconfig['is_use'] eq 0"}checked="checked"{/if}>否</label>
+				</div>
+			</div>
+			<div class="line line-dashed line-lg pull-in"></div>
+			<div class="form-group">
+				<div class="col-sm-4 col-sm-offset-2">
+					<a href="javascript:void(0);" onclick="setExpressConfigAjax()" class="btn btn-primary">提交</a>
+				</div>
+			</div>
+		</form>
+	</div>
+</section>
+<script>
+	
+	function setExpressConfigAjax(){
+		var appid = $('#appid').val();
+		var appkey = $('#appkey').val();
+		var back_url = $(".back_url").text();
+		var is_use = $("input[type='radio'][name='is_use']:checked").val();
+		$.ajax({
+			type:"post",
+			url : "{:__URL('PLATFORM_MAIN/config/expressmessage')}",
+			data : {
+				"appid" : appid,
+				"appkey":appkey,
+				"back_url" : back_url,
+				"is_use" : is_use
+			},
+			success : function(data){
+				if(data['code'] > 0){
+					showMessage('success', data["message"],"{:__URL('PLATFORM_MAIN/config/expressmessage')}");
+				}else{
+					showMessage('error', data["message"]);
+				}
+			}
+		});
+	}
+</script>
+{/block}

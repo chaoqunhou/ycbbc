@@ -1,0 +1,124 @@
+{extend name="platform/base" /} 
+{block name="main"}
+<section class="panel panel-default">
+	<div class="table-responsive">
+		<table class="table table-striped b-t b-light text-sm">
+			<thead>
+				<tr>
+					<th width="40"><input type="checkbox"></th>
+					<th width="300">举报类型</th>
+					<th class="center">举报类型描述</th>
+					<th width="120" class="center">状态</th>
+					<th width="150" class="center">操作</th>
+				</tr>
+			</thead>
+			<tbody id="list">
+				<tr></tr>
+			</tbody>
+		</table>
+	</div>
+	{include file="platform/page" /}
+</section>
+{/block} {block name="script"}
+<script type="text/javascript">	
+
+function modifyGoodsRecommend(inform_type_id, type, inform_type_state){
+//	 alert(goods_id);
+
+	$.ajax({
+		type : "post",
+		url : "PLATFORM_MAIN/Report/modifyGoodsRecommend",
+		async : true,
+		data : {
+			"inform_type_id" : goods_id,
+			"type" : type,
+			"inform_type_state" : inform_type_state
+		},
+		success : function(data) {
+			return true;
+		}
+	});
+}
+
+$(function(){
+	LoadingInfo(1);
+});
+	//加载数据
+	function LoadingInfo(pageIndex) {
+		var search_text = $("#search_text").val();
+		$.ajax({
+			type : "post",
+			async : true,
+			data : {
+				"pageIndex" : pageIndex, "search_text" : search_text
+			},
+			success : function(data) {
+				var html = '';
+				$("#total_count_num").text(data["total_count"]);
+				$("#page_count_num").text(data["page_count"]);
+				$("#page_count").val(data["page_count"]);
+				$("#pageNumber a").remove();
+				
+				if (data["data"].length > 0) {
+					for (var i = 0; i < data["data"].length; i++) {
+						html += '<tr>';
+						html += '<td class="center"><input type="checkbox" name="sub" value="'+ data['data'][i]['inform_type_id']+'"></td>';
+						html += '<td>' + data["data"][i]["inform_type_name"] + '</td>';
+						html += '<td class="center">' + data["data"][i]["inform_type_desc"] + '</td>';
+						if(data["data"][i]["inform_type_state"] == 1){
+							html += '<td class="center"><a href="#" class="active" onclick="modifyGoodsRecommend('+data["data"][i]["inform_type_id"]+',1,0)" data-toggle="class"><i class="fa fa-check text-success text-active"></i><i class="fa fa-times text-danger text"></i></a></td>';
+						}else{
+							html += '<td class="center"><a href="#" class="" onclick="modifyGoodsRecommend('+data["data"][i]["inform_type_id"]+',1,1)" data-toggle="class"><i class="fa fa-check text-success text-active"></i><i class="fa fa-times text-danger text"></i></a></td>';
+						}
+						html += '<td class="center"><a href="javascript:void(0);" onclick="delreporttype(' + data["data"][i]["inform_type_id"] + ')">删除</a></td> ';
+						html += '</tr>';
+					}
+				} else {
+					html += '<tr align="center"><th colspan="6">暂无符合条件的数据记录</th></tr>';
+				}
+				$("#list").html(html);
+				var totalpage = $("#page_count").val();
+				if (totalpage == 1) {
+					changeClass("all");
+				}
+				initPageData(data["page_count"],data['data'].length,data['total_count']);
+				var $html = pagenumShow(jumpNumber,totalpage,{$pageshow})
+				$("#pageNumber").append($html);
+			}
+		});
+	}
+	
+	/* 删除品牌 */
+	function delreporttype(inform_type_id) {
+		$( "#dialog" ).dialog({
+            buttons: {
+                "确定": function() {
+                    $(this).dialog('close');
+					$.ajax({
+						type : "post",
+						url : "PLATFORM_MAIN/report/delreporttype",
+						data : {
+							'inform_type_id' : inform_type_id
+						},
+						async : true,
+						success : function(data) {
+							if (data['code'] > 0) {
+								showMessage('success', data["message"],'PLATFORM_MAIN/report/reporttypelist');
+							}else if(data['code'] == -1){
+								showMessage('error', "当前举报了类型存在主题内容，不能删除！");
+							}
+						}
+					});
+                },
+                "取消,#e57373": function() {
+                    $(this).dialog('close');
+                }
+            },
+            contentText:"你确定删除吗？",
+            title:"消息提醒"
+        });
+	}	
+	
+
+</script>
+{/block}

@@ -1,0 +1,129 @@
+{extend name="platform/base" /} 
+{block name="main"}
+	<div class="padder-v">
+		<form class="form-horizontal">
+			<section class="panel panel-default">
+				<header class="panel-heading font-bold"> 举报信息 </header>
+				<div class="panel-body">
+						<div class="form-group">
+							<label class="col-md-1 control-label">商品名称</label>
+							<div class="col-md-5">
+								<p class="form-control-static">{$informinfo.inform_goods_name}</p>
+							</div>
+													
+							<label class="col-md-1 control-label">店铺名称</label>
+							<div class="col-md-5">
+								<p class="form-control-static">{$informinfo.inform_shop_name}</p>
+							</div>
+						</div>
+						
+						<div class="line line-dashed line-lg pull-in"></div>
+						<div class="form-group">
+							<label class="col-md-1 control-label"></label>							
+							<div class="col-md-11">
+								<a><img src="__ROOT__/{$informinfo.inform_goods_image}"></a>
+							</div>							
+						</div>
+
+				</div>
+			</section>
+			
+			
+			<section class="panel panel-default">
+				<header class="panel-heading font-bold"> 举报信息 </header>
+				<div class="panel-body">
+					<div class="form-group">
+						<label class="col-md-1 control-label">举报状态</label>
+						<div class="col-md-5">
+							<p class="form-control-static">
+								{switch name="informinfo.inform_state"}
+								    {case value="1"}未处理{/case}
+								    {case value="2"}已处理{/case}
+								{/switch}
+							</p>
+						</div>
+						
+						<label class="col-md-1 control-label">举报主题</label>
+						<div class="col-md-5">
+							<p class="form-control-static">{$informinfo.inform_subject_content} &nbsp;</p>
+						</div>
+						
+						<label class="col-md-1 control-label">举报人</label>
+						<div class="col-md-5">
+							<p class="form-control-static">{$informinfo.inform_user_name} &nbsp;</p>
+						</div>
+						
+						<label class="col-md-1 control-label">举报时间</label>
+						<div class="col-md-5">
+							<p class="form-control-static">{$informinfo['inform_datetime']|getTimeStampTurnTime} &nbsp;</p>
+						</div>
+
+						
+						<label class="col-md-1 control-label">举报内容</label>
+						<div class="col-md-11">
+								<p class="form-control-static">{$informinfo.inform_subject_content} &nbsp;</p>
+						</div>
+						
+						<label class="col-md-1 control-label">举报图证</label>
+						<div class="col-md-11">
+							<p class="form-control-static">
+							{if condition="$informinfo.inform_pic1"}
+								<a href="__ROOT__/{$informinfo.inform_pic1}" target="_black"><img src="__ROOT__/{$informinfo.inform_pic1}" style="width:60px; height:60px; border:#ccc 1px solid;"></a>
+							{/if}
+							{if condition="$informinfo.inform_pic2"}
+								<a><img src="__ROOT__/{$informinfo.inform_pic2}"  style="width:60px; height:60px; border:#ccc 1px solid;"></a>
+							{/if}
+							{if condition="$informinfo.inform_pic3"}
+								<a><img src="__ROOT__/{$informinfo.inform_pic3}"  style="width:60px; height:60px; border:#ccc 1px solid;"></a>
+							{/if}
+							</p>
+						</div>	
+						
+						
+
+					</div>
+				</div>
+			</section>
+			
+			<section class="panel panel-default">
+				<header class="panel-heading font-bold"> 处理信息 </header>
+				<div class="panel-body">
+					
+						<label class="col-md-1 control-label">处理结果</label>
+						<div class="col-md-5">
+							<p class="form-control-static">
+								{switch name="informinfo.inform_handle_type"}
+								    {case value="1"}无效举报{/case}
+								    {case value="2"}恶意举报{/case}
+								    {case value="3"}有效举报{/case}
+								{/switch}
+								&nbsp;
+							</p>
+						</div>
+					
+						<label class="col-md-1 control-label">处理时间</label>
+						<div class="col-md-5">
+							<p class="form-control-static">{$informinfo['inform_handle_datetime']|getTimeStampTurnTime} &nbsp;</p>
+						</div>
+											
+
+						<label class="col-md-1 control-label">处理内容</label>
+						<div class="col-md-11">
+							<p class="form-control-static">{$informinfo.inform_handle_message} &nbsp;</p>
+						</div>
+
+						
+						
+						
+				</div>
+			</section>	
+			{eq name="informinfo['inform_state']" value="1"}							
+				<div class="line line-dashed line-lg pull-in"></div>
+				<div class="form-group">			
+					<div class="col-sm-1 col-sm-offset-1">
+						<a href="PLATFORM_MAIN/Inform/informhandle?inform_id={$informinfo.inform_id}" class="btn btn-primary">处理</a>
+					</div>
+				</div>
+			{/eq}			
+	</div>
+{/block}

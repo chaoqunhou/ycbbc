@@ -1,0 +1,74 @@
+{extend name="platform/base" /} 
+{block name="main"}
+	<div class="padder-v">
+		<form class="form-horizontal" action="" id="upladform1"  method="post">
+			<section class="panel panel-default">
+				<header class="panel-heading font-bold"> 商品信息 </header>
+				<div class="panel-body">
+						<div class="form-group">
+							<label class="col-md-1 control-label">商品名称</label>
+							<div class="col-md-5">
+								<p class="form-control-static">{$informinfo.inform_goods_name}</p>
+							</div>
+						</div>
+						
+						<div class="line line-dashed line-lg pull-in"></div>
+						<div class="form-group">
+							<label class="col-md-1 control-label"></label>							
+							<div class="col-md-11">
+							{if condition="$informinfo.inform_goods_image"}
+								<a><img src="__ROOT__/{$informinfo.inform_goods_image}"></a>
+							{/if}
+							</div>							
+						</div>
+
+				</div>
+			</section>
+			
+			
+			<section class="panel panel-default">
+				<header class="panel-heading font-bold">处理结果</header>
+				<div class="panel-body">
+					<div class="form-group">
+						<label class="col-sm-1 control-label"></label>
+						<div class="col-md-10">
+							<label class="radio inline col-md-12">
+							<input name="inform_handle_type" type="radio"  value="1" checked="checked">无效举报
+							</label>
+							<label class="radio inline col-md-12">
+							<input type="radio" name="inform_handle_type" value="2">恶意举报
+							</label> 
+							<label class="radio inline col-md-12">
+							<input type="radio" name="inform_handle_type" value="3">有效举报
+							</label> 		 					
+						</div>
+					</div>
+				</div>
+			</section>
+			
+			<section class="panel panel-default">
+				<header class="panel-heading font-bold"> 处理信息 </header>
+				<div class="panel-body">
+					<div class="form-group">
+					 		<label class="col-sm-1 control-label"></label>
+							<div class="col-sm-4">
+							  <textarea name="inform_handle_message" id="inform_handle_message" cols="45" rows="5" class="form-control"></textarea>
+							</div>
+						</div>
+					</div>
+
+
+					<div class="form-group">
+						<label class="col-sm-1 control-label"></label>
+						<div class="col-sm-1 col-sm-offset-1">
+							<button type="submit" class="btn btn-primary">保存</button>
+						</div>
+					</div>
+													
+				</div>
+			</section>	
+					
+
+		</form>			
+	</div>
+{/block}

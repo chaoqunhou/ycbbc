@@ -1,0 +1,228 @@
+{extend name="platform/base" /}
+{block name="resources"/} 
+<style>
+.modal-infp-style{
+width:90%;
+	margin:10px auto;
+}
+.modal-infp-style table{
+	width:100%;
+}
+.modal-infp-style table tr td{
+	border: 1px solid #e6e6e6;
+    padding: 10px;
+}
+/* .modal{
+	width:614px;
+} */
+</style>
+{/block}
+
+{block name="main"}
+<section class="panel panel-default">
+	<div class="table-responsive">
+		<table class="table table-striped b-t b-light text-sm">
+			<thead>
+				<tr>
+					<th width="10%"><input type="checkbox"></th>					
+					<th width="10%">反馈类型 </th>
+					<th width="10%">反馈人</th>
+					<th width="20%" class="center">联系方式</th>
+					<th width="20%">反馈信息</th>
+					<th width="10%" class="center">举报时间</th>					
+					<th width="10%" class="center">操作</th>
+				</tr>
+			</thead>
+			<tbody id="list">
+				<tr></tr>
+			</tbody>
+		</table>
+	</div>
+	{include file="platform/page" /}
+</section>
+
+
+<!-- 提现详情模态框（Modal） -->
+<div class="modal fade" id="details" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">提现详情</h4>
+            </div>
+            <div class="modal-body">
+            	<div class="modal-infp-style">
+            		<table>
+            			<tr>
+            				<td>反馈类型 </td>
+            				<td colspan='8' id="f_type"></td>
+            			</tr>
+            			<tr>
+            				<td>反馈人</td>
+            				<td colspan='4' id="real_name"></td>
+            				<td>联系方式</td>
+            				<td colspan='4' id="mobile"></td>
+            			</tr>
+
+            			<tr>
+            				<td>反馈图片</td>
+            				<td colspan='8' id="f_img"></td>
+            			</tr>
+            			<tr>
+            				<td>日期</td>
+            				<td colspan='8' id="create_time"></td>
+            			</tr>
+            			<tr>
+            				<td>反馈信息</td>
+            				<td colspan='8' id="f_content"></td>
+            			</tr>
+
+            		</table>
+            	</div>
+            </div>
+            <div class="modal-footer" id="statehtml">
+            
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" id="uid"/>
+<input type="hidden" id="status"/>
+{/block}
+{block name="script"}
+
+<script type="text/javascript">	
+ function searchData(){
+	LoadingInfo(1);
+} 
+$(function(){
+	LoadingInfo(1);
+})
+function LoadingInfo(pageIndex) 
+	{
+		
+		$.ajax({
+			type : "post",
+			url : "{:__URL('PLATFORM_MAIN/feedback/feedbacklist')}",
+			async : true,
+			data : {"pageIndex" : pageIndex},
+			success : function(data) {
+				var html = '';
+				$("#total_count_num").text(data["total_count"]);
+				$("#page_count_num").text(data["page_count"]);
+				$("#page_count").val(data["page_count"]);
+				$("#pageNumber a").remove();
+				if (data["data"].length > 0) {
+					for (var i = 0; i < data["data"].length; i++) {
+						html += '<tr>';
+						html += '<td><input type="checkbox" name="sub" value="'+ data['data'][i]['inform_id']+'"></td>';
+						
+						if(data["data"][i]["f_type"] == 1)
+						{
+							html += '<td>e彩网站</td>';
+						}
+						else if(data["data"][i]["f_type"] == 2)
+						{
+							html += '<td>e彩移动端</td>';
+						}
+						else if(data["data"][i]["f_type"] == 3)
+						{
+							html += '<td>其它</td>';
+						}
+						else
+						{
+							html += '<td></td>';
+						}
+
+						html += '<td>'+data["data"][i]["nick_name"]+'</td>';
+						html += '<td class="center">'+data["data"][i]["mobile"]+'</td>';
+
+						html += '<td>'+data["data"][i]["f_content"]+'</td>';
+
+						html += '<td class="center">'+data["data"][i]["create_time"]+'</td>';
+
+
+						html += '<td class="center"><a  href="javascript:void(0);" onclick="details('+ data["data"][i]["id"] +');">查看</a>';
+						//html += ' <a href="javascript:void(0);" onclick="deleteReport('+data["data"][i]["inform_id"]+')">删除</a>';
+
+						
+						html += '</td>';
+						html += '</tr>';
+					}
+				} else {
+					html += '<tr align="center"><th colspan="10">暂无符合条件的数据记录</th></tr>';
+				}
+				$("#list").html(html);
+				var totalpage = $("#page_count").val();
+				if (totalpage == 1) {
+					changeClass("all");
+				}
+				/* initPageData(data["page_count"],data['data'].length,data['total_count']); */
+				var $html = pagenumShow(jumpNumber,totalpage,{$pageshow})
+				$("#pageNumber").append($html);
+			}
+		});
+	}
+	
+
+	//提现详情
+	function details(id)
+	{
+		   $.ajax({
+				type : "post",
+				url : "{:__URL('PLATFORM_MAIN/Feedback/feedbackinfo')}",
+				async : true,
+				data : {"id" :id},
+				success : function(data) {
+					//alert(JSON.stringify(data));
+					if (data) {
+					
+					if(data["f_type"] == 1)
+					{
+						$("#f_type").html('e彩网站');
+					}
+					else if(data["f_type"] == 2)
+					{
+						$("#f_type").html('e彩移动端');
+					}
+					else if(data["f_type"] == 3)
+					{
+						$("#f_type").html('其它');
+					}
+					else
+					{
+						$("#f_type").html();
+					}
+					
+					$("#real_name").html(data["real_name"]);
+					$("#mobile").html(data["mobile"]);
+					
+					var f_img = '';
+					var f_img1 = '';
+					str=data["f_img"]; 
+					arr=str.split(',');
+					for(var i=0;i<arr.length;i++)  
+					{  
+						f_img='<img src="__ROOT__/'+arr[i]+'" style="width:4rem; hight:4rem; float:left;">';
+						f_img1 +=f_img;
+					} 
+					$("#f_img").html(f_img1);
+					
+					$("#create_time").html(data["create_time"]);
+					$("#f_content").html(data["f_content"]);
+
+					$("#statehtml").html("<button type='button' class='btn btn-default' data-dismiss='modal'>关闭</button>");
+					if(data['id'] )
+						$("#details").modal("show");
+					}
+					else
+					{
+						showMessage('error', data["message"]);
+					} 
+					
+				}
+	   	})
+	}	
+	
+</script>
+{/block}

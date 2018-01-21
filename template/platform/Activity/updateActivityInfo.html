@@ -1,0 +1,168 @@
+{extend name="platform/base" /}
+{block name="resources"}
+<script type="text/javascript" src="__STATIC__/My97DatePicker/WdatePicker.js"></script>
+<style>
+
+</style>
+{/block}
+{block name="main"}
+<section class="panel panel-default">
+    <header class="panel-heading font-bold"> 添加活动 </header>
+    <div class="panel-body">
+        <form class="form-horizontal" id="activity_form" name="form">
+            <div class="form-group">
+                <label class="col-sm-2 control-label">活动标题</label>
+                <div class="col-md-2">
+                    <input type="text" class="form-control" id="activity_title" name="brand_name" value="{$activityInfo.activity_title}" required>
+                </div>
+                <label class="col-md-8 error" for="brand_name" ></label>
+            </div>
+            <div class="line line-dashed line-lg pull-in"></div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">是否开启</label>
+                <div class="col-md-4">
+                    {if condition="$activityInfo.activity_state eq 0"}
+                        <label class="switch">
+                            <input id="activity_state" type="checkbox" >
+                            <span></span>
+                        </label>
+                    {elseif condition="$activityInfo.activity_state eq 1"/}
+                        <label class="switch">
+                            <input id="activity_state" type="checkbox" checked>
+                            <span></span>
+                        </label>
+                    {/if}
+                </div>
+            </div>
+            <div class="line line-dashed line-lg pull-in"></div>
+
+
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">横幅图片</label>
+                <div class="col-md-10">
+                    <p><img id="imgLogo" src="__ROOT__/{$activityInfo.activity_banner}" class="imglogo"/></p>
+                    <a href="javascript:void(0);" style="display:block;position:relative;z-index:1;">
+                        <span style="width: 97px;height: 34px;position: absolute;left: 0;top: 0;z-index: 2;cursor: pointer;">
+                        <input hidefocus="true" size="1" class="input-file" name="file_upload"
+                               id="uploadImg" nc_type="change_store_label" type="file" style="width: 97px;height: 34px;padding: 0;margin: 0;border: none 0;opacity: 0;filter: alpha(opacity = 0);cursor: pointer;"
+                               onchange="imgUpload(this);">
+                            <input type="hidden" id="logo" value="{$activityInfo.activity_banner}"/>
+                        </span>
+                        <a class="btn btn-default"><i class="fa fa-cloud-upload text"></i><span class="text">上传图片</span></a>
+                    </a>
+                </div>
+            </div>
+            <div class="line line-dashed line-lg pull-in"></div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">排序：</label>
+                <div class="col-md-1">
+                    <input type="text" class="form-control" id="activity_sort" value="{$activityInfo.activity_sort}" placeholder="0" onkeyup='this.value=this.value.replace(/\D/gi,"")' required>
+                </div>
+            </div>
+            <div class="line line-dashed line-lg pull-in"></div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">开始时间：</label>
+                <div class="col-md-1">
+                    <input type="text" value="{$activityInfo.activity_start_date}" id='startDate'  class="input-medium" style="float:left;width:203px;margin-right:5px;padding:5px 10px;height:30px;border:1px solid #d9d9d9;" onclick="WdatePicker()"/>
+                </div>
+            </div>
+            <div class="line line-dashed line-lg pull-in"></div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">结束时间：</label>
+                <div class="col-md-1">
+                    <input type="text" id='endDate' value="{$activityInfo.activity_end_date}"  class="input-medium" style="float:left;width:203px;margin-right:5px;padding:5px 10px;height:30px;border:1px solid #d9d9d9;" onclick="WdatePicker()" />
+                </div>
+            </div>
+            <div class="line line-dashed line-lg pull-in"></div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">活动介绍:</label>
+                <div class="col-sm-4">
+                    <div id="editor"  class="form-control" style="overflow: scroll; height: 150px;">{$activityInfo.activity_desc}</div>
+                </div>
+            </div>
+            <div class="line line-dashed line-lg pull-in"></div>
+
+            <div class="form-group">
+                <div class="col-sm-4 col-sm-offset-2">
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+<script>
+
+    $().ready(function() {
+        $("#activity_form").validate({
+            submitHandler : function() {
+                addActivityInfoAjax();
+            }
+        });
+    });
+    /**
+     *添加活动信息
+     */
+    function addActivityInfoAjax() {
+        var activity_id = "{$activityInfo.activity_id}";
+        var activity_title = $("#activity_title").val();
+        var activity_sort = $("#activity_sort").val();
+        var activity_start_date = $("#startDate").val();
+        var activity_end_date = $("#endDate").val();
+        var activity_banner = $("#logo").val();
+        var activity_desc = $("#editor").html();
+        if ($("#activity_state").prop("checked")) {
+            var activity_state = 1;
+        } else {
+            var activity_state = 0;
+        }
+        $.ajax({
+            type : "post",
+            url : "{:__URL('PLATFORM_MAIN/activity/updateActivityInfo')}",
+            data : {
+                'activity_id' : activity_id,
+                'activity_title' : activity_title,
+                'activity_sort' : activity_sort,
+                'activity_start_date' : activity_start_date,
+                'activity_end_date' : activity_end_date,
+                'activity_banner' : activity_banner,
+                'activity_desc' : activity_desc,
+                'activity_state' : activity_state
+            },
+            success : function(data) {
+                if (data["code"] > 0) {
+
+                    showMessage('success', '修改成功！',__URL('PLATFORM_MAIN/activity/activityList'));
+                } else {
+                    showMessage('error', '修改失败');
+                }
+            }
+        });
+    }
+
+
+    /**
+     *图片上传
+     */
+    /* 	function imgUpload(event) {
+            var fileid = $(event).attr("id");   var str = $(event).next().attr("id");
+            fileCommonUpload("UPLOAD_URL", fileid,"__UPLOAD__",str);
+        } */
+    function imgUpload(event) {
+        var fileid = $(event).attr("id");
+        var data = { 'file_path' : UPLOADCOMMON };
+        uploadFile(fileid,data,function(res){
+            if(res.code){
+                $("#imgLogo").attr("src","__UPLOAD__/"+res.data);
+                $("#logo").val(res.data);
+                showTip(res.message,"success");
+            }else{
+                showTip(res.message,"error");
+            }
+        });
+    }
+</script>
+{/block}

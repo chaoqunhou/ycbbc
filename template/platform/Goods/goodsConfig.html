@@ -1,0 +1,61 @@
+{extend name="platform/base"}
+{block name="resources"}
+<style>
+
+</style>
+{/block}
+{block name="main"}
+<section class="panel panel-default">
+    <div class="panel-body">
+        <form class="form-horizontal" id="subjectSetting_form" name="form">
+            <div class="form-group">
+                <label class="col-sm-2 control-label">商品审核:</label>
+                <div class="col-sm-2">
+                    {if condition="$goods_config_info.is_use eq 1"}
+                    <label class="switch"><input id="goods_config_state" type="checkbox" checked="checked"><span></span></label>
+                    {else/}
+                    <label class="switch"><input id="goods_config_state" type="checkbox"><span></span></label>
+                    {/if}
+                </div>
+                <label class=" control-label">开启后,店铺发布商品将需要审核</label>
+            </div>
+        </form>
+    </div>
+</section>
+{/block}
+{block name="script"}
+<script>
+    $().ready(function() {
+        $("#goods_config_state").change(function(){
+            goodsConfig();
+        });
+
+    });
+    /*审核商品*/
+    function goodsConfig(){
+        if ($("#goods_config_state").prop("checked")) {
+            var is_use = 1;
+        } else {
+            var is_use = 0;
+        }
+
+        $.ajax({
+            type : "POST",
+            url : "{:__URL('PLATFORM_MAIN/goods/goodsConfig')}",
+            data : {
+                'is_use' : is_use
+            },
+            async : true,
+            success : function(data){
+                if(data['code']>0){
+                    showMessage('success',data['message']);
+                }else{
+                    showMessage('error',data['message']);
+                }
+            }
+        });
+    }
+
+
+</script>
+{/block}

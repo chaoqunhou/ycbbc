@@ -1,0 +1,111 @@
+{extend name="platform/base" /}
+{block name="resources"/}
+<style>
+p {
+    margin: 6px 0 10px;
+}
+.label-radio {
+    float: left;
+    text-align: left;
+    padding: 0 10px;
+    overflow: hidden;
+    color: #666;
+    font-weight: normal;
+    line-height: 32px;
+    margin-bottom: 0px;
+	font-size: 14px;
+}
+.label-radio input {
+    margin-right: 5px;
+}
+.div_col{
+	font-size: 12px;
+    line-height: 32px;
+    vertical-align: top;
+    letter-spacing: normal;
+    word-spacing: normal;
+    display: inline-block;
+    width: 75%;
+    padding: 10px 0 10px 0;
+}
+</style>
+
+{/block}
+{block name="main"}
+<section class="panel panel-default">
+	<header class="panel-heading font-bold"> 图片裁剪设置 </header>
+	<div class="panel-body">
+		<form class="form-horizontal">
+			<div class="form-group">
+				<label class="col-sm-2 control-label" style="margin-top: 8px;">缩略图:</label>
+				<div class="div_col" >
+					{if condition ="$info['thumb_type'] eq 2"}
+						<label class="label-radio"><input type="checkbox" name="thumb_type" value="2" checked>缩放后填充</label>
+					{else/}
+						<label class="label-radio"><input type="checkbox" name="thumb_type" value="2">缩放后填充</label>
+					{/if}
+					{if condition ="$info['thumb_type'] eq 3"}
+						<label class="label-radio"><input type="checkbox" name="thumb_type" value="3" checked>居中裁剪</label>
+					{else/}
+						<label class="label-radio"><input type="checkbox" name="thumb_type" value="3">居中裁剪</label>
+					{/if}			
+					{if condition ="$info['thumb_type'] eq 4"}
+						<label class="label-radio"><input type="checkbox" name="thumb_type" value="4" checked>左上角裁剪</label>
+					{else/}
+						<label class="label-radio"><input type="checkbox" name="thumb_type" value="4">左上角裁剪</label>
+					{/if}
+					<br>
+					{if condition ="$info['thumb_type'] eq 5"}
+						<label class="label-radio"><input type="checkbox" name="thumb_type" value="5" checked>右下角裁剪</label>
+					{else/}
+						<label class="label-radio"><input type="checkbox" name="thumb_type" value="5">右下角裁剪</label>
+					{/if}
+					{if condition ="$info['thumb_type'] eq 6"}
+						<label class="label-radio"><input type="checkbox" name="thumb_type" value="6" checked>固定尺寸缩放</label>
+					{else/}
+						<label class="label-radio"><input type="checkbox" name="thumb_type" value="6">固定尺寸缩放</label>
+					{/if}
+					<br>
+					<p class="hint">请选择缩略图的类型。</p>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-4 col-sm-offset-2">
+					<a href="javascript:void(0);" onclick="setConfigAjax()" class="btn btn-primary">提交</a>
+				</div>
+			</div>
+		</form>
+	</div>
+</section>
+<script type="text/javascript">
+$(function(){
+	$("input[name='thumb_type']").click(function(){
+		$("input[name='thumb_type']").prop("checked", false);
+		$(this).prop("checked", true);
+	})
+	
+})
+
+function setConfigAjax(){
+	var thumb_type = $("input[name='thumb_type']:checked").val();
+	var upload_size = $("#upload_size").val();
+	var upload_ext = $("#upload_ext").val();
+	$.ajax({
+		type:"post",
+		url : "{:__URL('PLATFORM_MAIN/config/pictureUploadSetting')}",
+		data : {
+			"thumb_type" : thumb_type,
+			"upload_size": upload_size,
+			"upload_ext" : upload_ext
+		},
+		success : function(data){
+			if(data['code'] > 0){
+				showMessage('success', data["message"], "{:__URL('PLATFORM_MAIN/config/pictureUploadSetting')}");
+			}else{
+				showMessage('error', data["message"]);
+			}
+		}
+	});
+}
+</script>
+{/block}

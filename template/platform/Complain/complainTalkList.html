@@ -1,0 +1,107 @@
+{extend name="platform/base" /}
+{block name="resources"}
+<script type="text/javascript" src="__STATIC__/My97DatePicker/WdatePicker.js"></script>
+<style>
+
+</style>
+{/block}
+
+ {block name="main"}
+<div class="row padder-v">
+	<div class="col-sm-2">
+		<input type="text" id="accuser_name" class="input-sm form-control" placeholder="投诉人">
+    </div>
+    <div class="col-sm-2">
+		<input type="text" id="accused_shop_name" class="input-sm form-control" placeholder="被投诉店铺">
+    </div> 
+    <div class="col-sm-2">
+		<input type="text" id="complain_subject" class="input-sm form-control" placeholder="投诉主题">
+    </div>
+	<input type="text" id='startDate' placeholder="请选择开始日期" class="input-medium" style="float:left;width:203px;margin-right:5px;padding:5px 10px;height:30px;border:1px solid #d9d9d9;" onclick="WdatePicker()"/>
+    <input type="text" id='endDate' placeholder="请选择结束日期" class="input-medium" style="float:left;width:203px;margin-right:5px;padding:5px 10px;height:30px;border:1px solid #d9d9d9;" onclick="WdatePicker()" />
+    
+	<div class="col-sm-1">
+		<button class="btn btn-sm btn-default" type="button"
+			onclick="LoadingInfo(1)">搜索</button>
+	</div>
+</div>
+<section class="panel panel-default">
+	<table class="table table-striped b-t b-light text-sm">
+		<thead>
+			<tr>
+				<th width="20"><input type="checkbox"></th>
+				<th>投诉人</th>
+				<th>被投诉店铺</th>
+				<th>投诉主题</th>
+				<th>投诉时间</th>
+				<th>操作</th>
+			</tr>
+		</thead>
+		<tbody id="list">
+			<tr></tr>
+		</tbody>
+	</table>
+	{include file="platform/page" /}
+</section>
+{/block} {block name="script"}
+<script type="text/javascript">
+$(function(){
+	LoadingInfo(1);
+});
+	function LoadingInfo(pageIndex) {
+		var accuser_name = $("#accuser_name").val();
+		var accused_shop_name = $("#accused_shop_name").val();
+		var complain_subject = $("complain_subject").val();
+		var start_date = $("#startDate").val();
+		var end_date = $("#endDate").val();	
+		$.ajax({
+			type : "post",
+			url : "PLATFORM_MAIN/complain/complainNewList",
+			async : true,
+			data : {
+				"pageIndex" : pageIndex,
+				"accuser_name" : accuser_name,
+				"accused_shop_name" : accused_shop_name,
+				"complain_subject" : complain_subject,
+				"start_date" : start_date,
+				"end_date" : end_date,
+				"complain_state" : 30,
+			},
+			success : function(data) {
+				console.log(data);
+				var html = '';
+				$("#total_count_num").text(data["total_count"]);
+				$("#page_count_num").text(data["page_count"]);
+				$("#page_count").val(data["page_count"]);
+				$("#pageNumber a").remove();
+				if (data["data"].length > 0) {
+					for (var i = 0; i < data["data"].length; i++) {
+						html += '<tr>';
+						html += '<td><input type="checkbox" name="sub" value="'+ data['data'][i]['complain_id']+'"></td>';
+						html += '<td>'+data['data'][i]['accuser_name']+'</td>';
+						html += '<td>' + data["data"][i]["accused_shop_name"] + '</td>';
+						html += '<td>' + data["data"][i]["complain_subject_content"] + '</td>';
+						html += '<td><a href="PLATFORM_MAIN/complain/complainProgress?complain_id=' + data["data"][i]["complain_id"] + '">详情</a></td>';
+						html += '</tr>';
+					}
+				} else {
+					html += '<tr align="center"><th colspan="8">暂无符合条件的投诉</th></tr>';
+				}
+				$("#list").html(html);
+				var totalpage = $("#page_count").val();
+				if (totalpage == 1) {
+					changeClass("all");
+				}
+				initPageData(data["page_count"],data['data'].length,data['total_count']);
+				var $html = pagenumShow(jumpNumber,totalpage,{$pageshow})
+				$("#pageNumber").append($html);
+			}
+		});
+	}
+	$("#search_text").keypress(function(e){
+		if(e.keyCode == 13){
+			LoadingInfo(1);
+		}
+	});
+</script>
+{/block}

@@ -1,0 +1,229 @@
+{extend name="platform/base" /}
+{block name="resources"/}
+<script type="text/javascript" src="__STATIC__/My97DatePicker/WdatePicker.js"></script>
+{/block}
+ {block name="main"}
+<div class="row padder-v">
+
+		<div class="col-sm-2">
+			<input type="text" id="inform_goods_name" class="input-sm form-control" placeholder="商品名称"> 
+		</div>
+
+		<div class="col-sm-2">
+			<input type="text" id="inform_subject_content" class="input-sm form-control" placeholder="举报主题"> 
+		</div>	
+			
+		<div class="col-sm-1">
+			<input type="text" id="inform_user_name" class="input-sm form-control" placeholder="举报人"> 
+		</div>
+						
+		<div class="col-sm-3">
+			<input type="text" id="startDate" placeholder="请选择开始日期" class="input-medium" style="float:left;width:45%;margin-right:5px;padding:5px 10px;height:30px;border:1px solid #d9d9d9;" onclick="WdatePicker()">		
+			<input type="text" id="endDate" placeholder="请选择结束日期" class="input-medium" style="float:left;width:45%;margin-right:5px;padding:5px 10px;height:30px;border:1px solid #d9d9d9;" onclick="WdatePicker()">
+		</div>
+		<div class="col-sm-1">
+			<button class="btn btn-sm btn-default" type="button" onclick="LoadingInfo(1)">搜索</button>
+		</div>
+	</div>
+<section class="panel panel-default">
+	<div class="table-responsive">
+		<table class="table table-striped b-t b-light text-sm">
+			<thead>
+				<tr>
+					<th width="20"><input type="checkbox"></th>
+					<th>商品图</th>
+					
+					<th style="width: 23%;">商品名称</th>
+					<th style="width: 23%;">店铺名称</th>
+					<th class="center">举报人</th>
+					<th class="center">举报类型</th>
+					<th>举报主题</th>
+					<th class="center">举报时间</th>
+					<th>处理结果</th>
+					
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody id="list">
+				
+			</tbody>
+		</table>
+	</div>
+	{include file="platform/page" /}
+</section>
+{/block} 
+{block name="script"}
+<script type="text/javascript">
+
+$(function(){
+	LoadingInfo(1);
+});
+	//加载举报信息列表
+	function LoadingInfo(pageIndex) 
+	{
+		var inform_state ="{$inform_state}";
+		var inform_goods_name =$("#inform_goods_name").val();
+		var inform_subject_content = $("#inform_subject_content").val();
+		var inform_user_name = $("#inform_user_name").val();
+		var startDate = $("#startDate").val();
+		var endDate = $("#endDate").val();
+		
+		$.ajax({
+			type : "post",
+			url : "PLATFORM_MAIN/inform/ajaxInformList",
+			async : true,
+			data : {
+				"pageIndex" : pageIndex,
+				"inform_goods_name" : inform_goods_name,
+				"inform_subject_content" : inform_subject_content,
+				"inform_user_name" : inform_user_name,
+				"startDate" : startDate,
+				"endDate" : endDate,
+				"inform_state":inform_state
+			},
+			success : function(data) {
+
+                var html = '';
+                $("#total_count_num").text(data["total_count"]);
+                $("#page_count_num").text(data["page_count"]);
+                $("#page_count").val(data["page_count"]);
+                $("#pageNumber a").remove();
+
+				if (data["data"].length > 0) 
+				{
+	                
+					for (var i = 0; i < data["data"].length; i++) {
+						html += '<tr>';
+						html += '<td><input type="checkbox" name="sub" value="'+ data['data'][i]['inform_id']+'"></td>';
+						html += '<td><img src="__ROOT__/'+data["data"][i]["inform_goods_image"]+'"></td>';
+						html += '<td>'+data['data'][i]['inform_goods_name']+'</td>';
+						html += '<td>'+data["data"][i]["inform_shop_name"]+'</td>';
+						html += '<td class="center">'+data["data"][i]["inform_user_name"]+'</td>';
+						
+						html += '<td class="center">'+data['data'][i]['inform_type_name']+'</td>';
+												
+						html += '<td>'+data["data"][i]["inform_subject_content"]+'</td>';
+						
+						html += '<td class="center">'+timeStampTurnTime(data["data"][i]["inform_datetime"])+'</td>';
+						
+						if(data["data"][i]["inform_handle_type"] == 1)
+						{
+							html += '<td class="center">无效举报</td>';
+						}
+						else if(data["data"][i]["inform_handle_type"] == 2)
+						{
+							html += '<td class="center">恶意举报</td>';
+						}
+						else if(data["data"][i]["inform_handle_type"] == 3)
+						{
+							html += '<td class="center">有效举报</td>';
+						}
+						else
+						{
+							html += '<td class="center"></td>';
+						}
+
+						html += '<td><a target="_BLANK" href="PLATFORM_MAIN/Inform/informinfo?inform_id=' + data["data"][i]["inform_id"] + '">查看</a>  &nbsp;&nbsp;&nbsp;';
+						html += ' <a href="javascript:void(0);" onclick="deleteInform('+data["data"][i]["inform_id"]+')">删除</a>';
+
+						html += '</td>';
+						html += '</tr>';
+					}
+				} else {
+					html += '<tr align="center"><th colspan="10">暂无符合条件的数据记录</th></tr>';
+				}
+				
+				
+				
+				
+				
+				$("#list").html(html);
+				
+				var totalpage = $("#page_count").val();
+				if (totalpage == 1) 
+				{
+					changeClass("all");
+				}
+				//initPageData(data["page_count"],data['data'].length,data['total_count']);
+				var $html = pagenumShow(jumpNumber,totalpage,{$pageshow});
+				$("#pageNumber").append($html);
+			}
+		});
+	}
+
+	//商品上架id合计
+	function goodsIdCount(){
+		var goods_ids= "";
+		$("#list input[type='checkbox']:checked").each(function() {
+			if (!isNaN($(this).val())) {
+				var state = $(this).data("state");
+				if(state == 0){
+					$( "#dialog" ).dialog({
+			            buttons: {
+			                "确定,#e57373": function() {
+			                    $(this).dialog('close');
+			                }
+			            },
+			            contentText:"记录中包含已下架记录",
+			            title:"消息提醒",
+			        });
+					return false;
+				}
+				goods_ids = $(this).val() + "," + goods_ids;
+			}
+		});
+		goods_ids = goods_ids.substring(0, goods_ids.length - 1);
+		if(goods_ids == ""){
+			$( "#dialog" ).dialog({				
+	            buttons: {
+	                "确定,#e57373": function() {
+	                    $(this).dialog('close');
+	                }
+	            },
+	            contentText:"请选择需要操作的记录",
+	            title:"消息提醒",
+	        });
+			return false;
+		}
+		modifyGoodsOnline(goods_ids);
+	}
+	
+
+	
+	function deleteInform(inform_id){
+		$( "#dialog" ).dialog({
+            buttons: {
+                "确定": function() {
+                    $(this).dialog('close');
+                    $.ajax({
+            			type : "post",
+            			url : "PLATFORM_MAIN/Inform/deleteInform",
+            			async : true,
+            			data : {
+            				"inform_id" : inform_id
+            			},
+            			success : function(data) {
+            				if(data["code"] > 0 ){
+            					showMessage('success', "删除成功",'{:url("")}');
+            				}else{
+            					showMessage('error', "删除失败");
+            				}
+            			}
+            		})
+                },
+                "取消,#e57373": function() {
+                    $(this).dialog('close');
+                }
+                
+            },
+            contentText:"你确定删除吗？",
+            title:"消息提醒"
+        });
+	}
+	$("#search_text").keypress(function(e){
+		if(e.keyCode == 13){
+			LoadingInfo(1);
+		}
+	});
+</script>
+{/block}

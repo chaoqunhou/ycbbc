@@ -1,0 +1,76 @@
+{extend name="platform/base"}
+{block name="resources"}
+<style>
+
+</style>
+{/block}
+{block name="main"}
+
+ <section class="panel panel-default">
+	<!-- <header class="panel-heading font-bold"> 添加主题 </header> -->
+	<div class="panel-body">
+		<form class="form-horizontal" id="subjectSetting_form" name="form">
+			<div class="form-group">
+				<label class="col-sm-2 control-label">投诉时效:</label>
+				<div class="col-md-2">
+					<input type="text" class="form-control" id="subjectSetting_name" name="subjectSetting_name" required value="">
+        </div>
+        <label class=" control-label">单位为天，订单完成后开始计算，多少天内可以发起投诉</label>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-4 col-sm-offset-2">
+					<button type="submit" class="btn btn-primary">保存<tton>
+				</div>
+			</div>
+		</form>
+	</div>
+</section> 
+{/block}
+{block name="script"}
+<script>
+	$().ready(function() {
+    LoadingInfo();
+		$("#subjectSetting_form").validate({
+			submitHandler : function() {
+				addReportTypeAjax();
+			}
+		});
+  });
+  /*加载数据*/
+  function LoadingInfo(){
+    $.ajax({
+      type : "POST",
+      url : "PLATFORM_MAIN/complain/getComplainSetting",
+      async : true,
+      success : function(data){
+        $("#subjectSetting_name").val(data);
+      }
+    });
+  }
+	/**
+	 *添加模块
+	 */
+		function addReportTypeAjax() {
+			var subjectSetting_name = $("#subjectSetting_name").val();
+
+		$.ajax({
+			type : "post",
+			url : "PLATFORM_MAIN/complain/complainSetting",
+			data : {
+				'subjectSetting_name' : subjectSetting_name,
+
+			},
+			async : true,
+			success : function(data) {
+ 
+				if (data['code'] > 0) {
+					showMessage('success', data["message"],'PLATFORM_MAIN/complain/complainNewlist');
+				} else {
+					showMessage('error', data["message"]);
+				}
+			}
+		});
+	}
+
+</script>
+{/block}
